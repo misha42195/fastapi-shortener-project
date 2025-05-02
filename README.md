@@ -17,3 +17,20 @@ Run dev server:
 ```shell
 fastapi dev
 ```
+Возвращает приветственное сообщение и ссылку на документацию OpenAPI.
+**Параметры запроса**
+
+-`name` (опционально, строка): имя для приветствия. По умолчанию - `World`.
+
+**Пример запроса**
+```shell
+GET/?name=Mish
+```
+
+**Пример ответа**
+
+```json
+{
+  "message": "Hello Misha",
+  "docs_path": "http://localhost:8000/docs"}
+```
