@@ -11,7 +11,10 @@ from fastapi import (
 from api.api_v1.short_urls.dependecies import (
     prefetch_short_url,
 )
-from schemas.short_url import ShortenedUrl
+from schemas.short_url import (
+    ShortenedUrl,
+    ShortenedUrlCreated,
+)
 from api.api_v1.short_urls.dependecies import SHORT_URL
 
 router = APIRouter(
@@ -43,15 +46,7 @@ def read_short_url_details(
     response_model=ShortenedUrl,
     status_code=status.HTTP_201_CREATED,
 )
-def create_short_url(
-    target_url: Annotated[AnyHttpUrl, Form()],
-    slug: Annotated[
-        str,
-        Len(min_length=3, max_length=5),
-        Form(),
-    ],
-):
+def create_short_url(short_url: ShortenedUrlCreated) -> ShortenedUrl:
     return ShortenedUrl(
-        target_url=target_url,
-        slug=slug,
+        **short_url.model_dump(),
     )
