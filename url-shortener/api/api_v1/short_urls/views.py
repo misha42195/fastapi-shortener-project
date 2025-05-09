@@ -23,7 +23,10 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[ShortenedUrl])
+@router.get(
+    "/",
+    response_model=list[ShortenedUrl],
+)
 def read_short_url():
     return SHORT_URL
 

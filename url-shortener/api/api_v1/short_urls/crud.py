@@ -29,7 +29,7 @@ def get_movies():
 
 
 @router.get(
-    "/{movie_id}/",
+    "/{slug}/",
     response_model=Movies,
 )
 def get_movie(
@@ -46,10 +46,10 @@ def get_movie(
     response_model=Movies,
     status_code=status.HTTP_201_CREATED,
 )
-def create_movie(movies: CreateMovie) -> Movies:
+def create_movie(
+    movies: CreateMovie,
+) -> Movies:
 
-    movie_id = random.randint(0, 100)
     return Movies(
-        id=movie_id,
         **movies.model_dump(),
     )
