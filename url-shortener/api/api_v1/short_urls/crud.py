@@ -1,55 +1,53 @@
-import random
 from datetime import date
-from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-    Form,
-)
-from api.api_v1.short_urls.dependecies import movies_list, prefetch_movie
-from schemas.muvies import (
-    Movies,
-    CreateMovie,
-)
+from pydantic import BaseModel, AnyHttpUrl
 
-router = APIRouter(
-    prefix="/movies",
-    tags=["Movies"],
-)
+from schemas.muvies import Movies, CreateMovie
 
 
-@router.get(
-    "/",
-    response_model=list[Movies],
-)
-def get_movies():
-    return movies_list
+class MoviesStorage(BaseModel):
+    movies_slug: dict[str, Movies] = {}
+
+    def get_movies(self) -> list[Movies]:
+        return list(self.movies_slug.values())
+
+    def get_by_slug(self, slug) -> Movies:
+        return self.movies_slug.get(slug)
+
+    def create_movie(self, movie_in: CreateMovie) -> Movies:
+        movie = Movies(
+            **movie_in.model_dump(),
+        )
+        self.movies_slug[movie.slug] = movie
+        return movie
 
 
-@router.get(
-    "/{slug}/",
-    response_model=Movies,
-)
-def get_movie(
-    movie: Annotated[
-        Movies,
-        Depends(prefetch_movie),
-    ],
-) -> Movies:
-    return movie
+movie_storage = MoviesStorage()
 
-
-@router.post(
-    "/",
-    response_model=Movies,
-    status_code=status.HTTP_201_CREATED,
-)
-def create_movie(
-    movies: CreateMovie,
-) -> Movies:
-
-    return Movies(
-        **movies.model_dump(),
+movie_storage.create_movie(
+    CreateMovie(
+        slug="shoushenka",
+        title="Побег из Шоушенка",
+        description="Два заключённых сближаются за годы заключения, находя утешение и надежду на свободу.",
+        release_year=date(1994, 9, 22),
+        director="Фрэнк Дарабонт",
     )
+)
+movie_storage.create_movie(
+    CreateMovie(
+        slug="father",
+        title="Крёстный отец",
+        description="Стареющий глава мафиозной семьи передаёт власть своему неохотному сыну.",
+        release_year=date(1972, 3, 24),
+        director="Фрэнсис Форд Коппола",
+    )
+)
+movie_storage.create_movie(
+    CreateMovie(
+        slug="start",
+        title="Начало",
+        description="Вор использует технологию проникновения в сны, чтобы внедрить идею в сознание цели.",
+        release_year=date(2010, 7, 16),
+        director="Кристофер Нолан",
+    ),
+)
