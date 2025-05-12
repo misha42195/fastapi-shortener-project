@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, AnyHttpUrl
+from pydantic import BaseModel
 
 from schemas.muvies import Movies, CreateMovie
 
@@ -20,6 +20,12 @@ class MoviesStorage(BaseModel):
         )
         self.movies_slug[movie.slug] = movie
         return movie
+
+    def delete_by_slug(self, slug) -> None:
+        self.movies_slug.pop(slug)
+
+    def delete(self, movie: Movies) -> None:
+        self.delete_by_slug(slug=movie.slug)
 
 
 movie_storage = MoviesStorage()
