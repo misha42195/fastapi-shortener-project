@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from starlette import status
 
-from api.api_v1.short_urls.crud import movie_storage
+from api.api_v1.movies.crud import movie_storage
 from schemas.muvies import Movies
 
 
