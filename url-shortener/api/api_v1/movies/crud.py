@@ -2,7 +2,11 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from schemas.muvies import Movies, CreateMovie
+from schemas.muvies import (
+    Movies,
+    CreateMovie,
+    UpdateMovie,
+)
 
 
 class MoviesStorage(BaseModel):
@@ -26,6 +30,19 @@ class MoviesStorage(BaseModel):
 
     def delete(self, movie: Movies) -> None:
         self.delete_by_slug(slug=movie.slug)
+
+    def update_movie(
+        self,
+        movie: Movies,
+        movie_data_in: UpdateMovie,
+    ) -> Movies:
+        # new_movie = movie.model_copy(
+        #     update=movie_data_in.model_dump(),
+        # )
+        # self.movies_slug[new_movie.slug] = new_movie
+        for k, v in movie_data_in:
+            setattr(movie, k, v)
+        return movie
 
 
 movie_storage = MoviesStorage()

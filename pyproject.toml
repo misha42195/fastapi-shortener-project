@@ -1,7 +1,7 @@
 [project]
-name = "fastapi-url-shortener"
+name = "fastapi-movie"
 version = "0.1.0"
-description = "FastAPI URL Shortener"
+description = "FastAPI Movie"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

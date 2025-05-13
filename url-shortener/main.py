@@ -5,7 +5,7 @@ from starlette.requests import Request
 from api import router as api_router
 from api.redirect_views import router as redirect_router
 
-app = FastAPI(title="URL Shortener")
+app = FastAPI(title="Movies")
 app.include_router(api_router)
 app.include_router(redirect_router)
 
