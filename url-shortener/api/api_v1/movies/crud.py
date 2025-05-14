@@ -1,6 +1,9 @@
 from datetime import date
+from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
+
+from json_file.conf import PATH_TO_MOVIE_FILE
 
 from schemas.muvies import (
     Movies,
@@ -13,6 +16,14 @@ from schemas.muvies import (
 class MoviesStorage(BaseModel):
     movies_slug: dict[str, Movies] = {}
 
+    def save_movie(self) -> None:
+        PATH_TO_MOVIE_FILE.write_text(movie_storage.model_dump_json(indent=2))
+
+    def load_movie(self) -> "MoviesStorage":
+        if not PATH_TO_MOVIE_FILE.exists():
+            return MoviesStorage()
+        return self.__class__.model_validate_json(PATH_TO_MOVIE_FILE.read_text())
+
     def get_movies(self) -> list[Movies]:
         return list(self.movies_slug.values())
 
@@ -24,13 +35,16 @@ class MoviesStorage(BaseModel):
             **movie_in.model_dump(),
         )
         self.movies_slug[movie.slug] = movie
+        self.save_movie()
         return movie
 
     def delete_by_slug(self, slug) -> None:
         self.movies_slug.pop(slug)
+        self.save_movie()
 
     def delete(self, movie: Movies) -> None:
         self.delete_by_slug(slug=movie.slug)
+        self.save_movie()
 
     def update_movie(
         self,
@@ -39,6 +53,7 @@ class MoviesStorage(BaseModel):
     ) -> Movies:
         for k, v in movie_data_in:
             setattr(movie, k, v)
+        self.save_movie()
         return movie
 
     def movie_partial_update(
@@ -48,35 +63,43 @@ class MoviesStorage(BaseModel):
     ) -> Movies:
         for field_mane, value in movies_in.model_dump(exclude_unset=True).items():
             setattr(movies, field_mane, value)
+        self.save_movie()
         return movies
 
 
-movie_storage = MoviesStorage()
+# movie_storage = MoviesStorage()
+#
+# movie_storage.create_movie(
+#     CreateMovies(
+#         slug="shoushenka",
+#         title="Побег из Шоушенка",
+#         description="Два заключённых сближаются за годы заключения, находя утешение и надежду на свободу.",
+#         release_year=date(1994, 9, 22),
+#         director="Фрэнк Дарабонт",
+#     )
+# )
+# movie_storage.create_movie(
+#     CreateMovies(
+#         slug="father",
+#         title="Крёстный отец",
+#         description="Стареющий глава мафиозной семьи передаёт власть своему неохотному сыну.",
+#         release_year=date(1972, 3, 24),
+#         director="Фрэнсис Форд Коппола",
+#     )
+# )
+# movie_storage.create_movie(
+#     CreateMovies(
+#         slug="start",
+#         title="Начало",
+#         description="Вор использует технологию проникновения в сны, чтобы внедрить идею в сознание цели.",
+#         release_year=date(2010, 7, 16),
+#         director="Кристофер Нолан",
+#     ),
+# )
 
-movie_storage.create_movie(
-    CreateMovies(
-        slug="shoushenka",
-        title="Побег из Шоушенка",
-        description="Два заключённых сближаются за годы заключения, находя утешение и надежду на свободу.",
-        release_year=date(1994, 9, 22),
-        director="Фрэнк Дарабонт",
-    )
-)
-movie_storage.create_movie(
-    CreateMovies(
-        slug="father",
-        title="Крёстный отец",
-        description="Стареющий глава мафиозной семьи передаёт власть своему неохотному сыну.",
-        release_year=date(1972, 3, 24),
-        director="Фрэнсис Форд Коппола",
-    )
-)
-movie_storage.create_movie(
-    CreateMovies(
-        slug="start",
-        title="Начало",
-        description="Вор использует технологию проникновения в сны, чтобы внедрить идею в сознание цели.",
-        release_year=date(2010, 7, 16),
-        director="Кристофер Нолан",
-    ),
-)
+try:
+    # попытка считать данные з файла создаст пустой объект или считает данные
+    movie_storage = MoviesStorage().load_movie()
+except ValidationError:  # если получим ошибку валидации json файла, то
+    movie_storage = MoviesStorage()
+    movie_storage.save_movie()
