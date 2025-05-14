@@ -8,8 +8,9 @@ from api.api_v1.movies.crud import movie_storage
 from api.api_v1.movies.dependecies import prefetch_movie
 from schemas.muvies import (
     Movies,
-    UpdateMovie,
-    MoviePartialUpdate,
+    UpdateMovies,
+    MoviesPartialUpdate,
+    MoviesRead,
 )
 
 router = APIRouter(
@@ -37,7 +38,7 @@ MovieBySlug = Annotated[
 
 @router.get(
     "/",
-    response_model=Movies,
+    response_model=MoviesRead,
 )
 def get_movie(
     movie: MovieBySlug,
@@ -48,11 +49,11 @@ def get_movie(
 
 @router.put(
     "/",
-    response_model=Movies,
+    response_model=MoviesRead,
 )
 def update_movie_details(
     movie: MovieBySlug,
-    movie_data_in: UpdateMovie,
+    movie_data_in: UpdateMovies,
 ):
     movie = movie_storage.update_movie(movie, movie_data_in)
     return movie
@@ -60,16 +61,16 @@ def update_movie_details(
 
 @router.patch(
     "/",
-    response_model=Movies,
+    response_model=MoviesRead,
 )
 def update_movie_detail_partial(
     movie: MovieBySlug,
-    movie_in: MoviePartialUpdate,
+    movie_in: MoviesPartialUpdate,
 ):
     return movie_storage.movie_partial_update(
         movies=movie,
-    movies_in=movie_in,)
-
+        movies_in=movie_in,
+    )
 
 
 @router.delete(

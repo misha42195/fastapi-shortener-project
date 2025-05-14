@@ -4,8 +4,9 @@ from pydantic import BaseModel
 
 from schemas.muvies import (
     Movies,
-    CreateMovie,
-    UpdateMovie,
+    CreateMovies,
+    UpdateMovies,
+    MoviesPartialUpdate,
 )
 
 
@@ -18,7 +19,7 @@ class MoviesStorage(BaseModel):
     def get_by_slug(self, slug) -> Movies:
         return self.movies_slug.get(slug)
 
-    def create_movie(self, movie_in: CreateMovie) -> Movies:
+    def create_movie(self, movie_in: CreateMovies) -> Movies:
         movie = Movies(
             **movie_in.model_dump(),
         )
@@ -34,21 +35,26 @@ class MoviesStorage(BaseModel):
     def update_movie(
         self,
         movie: Movies,
-        movie_data_in: UpdateMovie,
+        movie_data_in: UpdateMovies,
     ) -> Movies:
-        # new_movie = movie.model_copy(
-        #     update=movie_data_in.model_dump(),
-        # )
-        # self.movies_slug[new_movie.slug] = new_movie
         for k, v in movie_data_in:
             setattr(movie, k, v)
         return movie
+
+    def movie_partial_update(
+        self,
+        movies: Movies,
+        movies_in: MoviesPartialUpdate,
+    ) -> Movies:
+        for field_mane, value in movies_in.model_dump(exclude_unset=True).items():
+            setattr(movies, field_mane, value)
+        return movies
 
 
 movie_storage = MoviesStorage()
 
 movie_storage.create_movie(
-    CreateMovie(
+    CreateMovies(
         slug="shoushenka",
         title="Побег из Шоушенка",
         description="Два заключённых сближаются за годы заключения, находя утешение и надежду на свободу.",
@@ -57,7 +63,7 @@ movie_storage.create_movie(
     )
 )
 movie_storage.create_movie(
-    CreateMovie(
+    CreateMovies(
         slug="father",
         title="Крёстный отец",
         description="Стареющий глава мафиозной семьи передаёт власть своему неохотному сыну.",
@@ -66,7 +72,7 @@ movie_storage.create_movie(
     )
 )
 movie_storage.create_movie(
-    CreateMovie(
+    CreateMovies(
         slug="start",
         title="Начало",
         description="Вор использует технологию проникновения в сны, чтобы внедрить идею в сознание цели.",

@@ -4,7 +4,8 @@ from starlette import status
 from api.api_v1.movies.crud import movie_storage
 from schemas.muvies import (
     Movies,
-    CreateMovie,
+    CreateMovies,
+    MoviesRead,
 )
 
 router = APIRouter(
@@ -23,10 +24,10 @@ def movies() -> list[Movies]:
 
 @router.post(
     "/",
-    response_model=Movies,
+    response_model=MoviesRead,
     status_code=status.HTTP_201_CREATED,
 )
-def create_movie(movie_in: CreateMovie) -> Movies:
+def create_movie(movie_in: CreateMovies) -> Movies:
     movie = movie_storage.create_movie(
         movie_in=movie_in,
     )
