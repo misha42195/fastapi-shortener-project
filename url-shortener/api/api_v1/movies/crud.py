@@ -1,9 +1,8 @@
-from datetime import date
-from pathlib import Path
+import logging
 
 from pydantic import BaseModel, ValidationError
 
-from json_file.conf import PATH_TO_MOVIE_FILE
+from core.config import PATH_TO_MOVIE_FILE
 
 from schemas.muvies import (
     Movies,
@@ -12,19 +11,26 @@ from schemas.muvies import (
     MoviesPartialUpdate,
 )
 
+log = logging.getLogger(__name__)
+
 
 class MoviesStorage(BaseModel):
     movies_slug: dict[str, Movies] = {}
 
     def save_movie(self) -> None:
         PATH_TO_MOVIE_FILE.write_text(movie_storage.model_dump_json(indent=2))
+        log.info("Saved movie to storage file.")
 
     def load_movie(self) -> "MoviesStorage":
         if not PATH_TO_MOVIE_FILE.exists():
+            log.info("Movie storage file doesn't exist")
+            log.info("returned a new instance")
             return MoviesStorage()
+
         return self.__class__.model_validate_json(PATH_TO_MOVIE_FILE.read_text())
 
     def get_movies(self) -> list[Movies]:
+        log.info("Возврат списка фильмов.")
         return list(self.movies_slug.values())
 
     def get_by_slug(self, slug) -> Movies:
@@ -35,6 +41,7 @@ class MoviesStorage(BaseModel):
             **movie_in.model_dump(),
         )
         self.movies_slug[movie.slug] = movie
+        log.info("Making a new film = %s", movie.slug)
         self.save_movie()
         return movie
 
@@ -100,6 +107,8 @@ class MoviesStorage(BaseModel):
 try:
     # попытка считать данные з файла создаст пустой объект или считает данные
     movie_storage = MoviesStorage().load_movie()
+    log.warning("Recovered data from storage file.")
 except ValidationError:  # если получим ошибку валидации json файла, то
     movie_storage = MoviesStorage()
     movie_storage.save_movie()
+    log.warning("File overwritten due to broken json file")

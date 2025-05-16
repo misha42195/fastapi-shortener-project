@@ -28,7 +28,9 @@ def movies() -> list[Movies]:
     response_model=MoviesRead,
     status_code=status.HTTP_201_CREATED,
 )
-def create_movie(movie_in: CreateMovies) -> Movies:
+def create_movie(
+    movie_in: CreateMovies,
+) -> Movies:
     movie = movie_storage.create_movie(
         movie_in=movie_in,
     )
