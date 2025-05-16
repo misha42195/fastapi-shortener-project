@@ -24,16 +24,29 @@ class MoviesStorage(BaseModel):
     def load_movie(self) -> "MoviesStorage":
         if not PATH_TO_MOVIE_FILE.exists():
             log.info("Movie storage file doesn't exist")
-            log.info("returned a new instance")
             return MoviesStorage()
 
         return self.__class__.model_validate_json(PATH_TO_MOVIE_FILE.read_text())
+
+    def init_storage_from_state(self) -> None:
+        try:
+            data = MoviesStorage().load_movie()
+        except ValidationError:
+            self.save_movie()
+            log.warning("Recovered data from storage file.")
+            return
+
+        self.movies_slug.update(
+            data.movies_slug,
+        )
+        log.warning("Recovered data from storage file.")
 
     def get_movies(self) -> list[Movies]:
         log.info("Возврат списка фильмов.")
         return list(self.movies_slug.values())
 
     def get_by_slug(self, slug) -> Movies:
+        log.info("получение фильма %s", self.movies_slug.get(slug))
         return self.movies_slug.get(slug)
 
     def create_movie(self, movie_in: CreateMovies) -> Movies:
@@ -104,11 +117,4 @@ class MoviesStorage(BaseModel):
 #     ),
 # )
 
-try:
-    # попытка считать данные з файла создаст пустой объект или считает данные
-    movie_storage = MoviesStorage().load_movie()
-    log.warning("Recovered data from storage file.")
-except ValidationError:  # если получим ошибку валидации json файла, то
-    movie_storage = MoviesStorage()
-    movie_storage.save_movie()
-    log.warning("File overwritten due to broken json file")
+movie_storage = MoviesStorage()

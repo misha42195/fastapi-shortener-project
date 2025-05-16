@@ -6,9 +6,13 @@ from fastapi import (
 from starlette.requests import Request
 from api import router as api_router
 from api.redirect_views import router as redirect_router
+from app_lifespan import lifespan
 from core import config
 
-app = FastAPI(title="Movies")
+app = FastAPI(
+    title="Movies",
+    lifespan=lifespan,
+)
 app.include_router(api_router)
 app.include_router(redirect_router)
 
