@@ -19,11 +19,11 @@ class MoviesStorage(BaseModel):
 
     def save_movie(self) -> None:
         PATH_TO_MOVIE_FILE.write_text(movie_storage.model_dump_json(indent=2))
-        log.info("Saved movie to storage file.")
+        log.info("Фильм сохранен в файл.")
 
     def load_movie(self) -> "MoviesStorage":
         if not PATH_TO_MOVIE_FILE.exists():
-            log.info("Movie storage file doesn't exist")
+            log.info("Файл хранения фильмов не существует")
             return MoviesStorage()
 
         return self.__class__.model_validate_json(PATH_TO_MOVIE_FILE.read_text())
@@ -33,20 +33,20 @@ class MoviesStorage(BaseModel):
             data = MoviesStorage().load_movie()
         except ValidationError:
             self.save_movie()
-            log.warning("Recovered data from storage file.")
+            log.warning("Восстановленные данные из файла хранения.")
             return
 
         self.movies_slug.update(
             data.movies_slug,
         )
-        log.warning("Recovered data from storage file.")
+        log.warning("Восстановленные данные из файла хранения.")
 
     def get_movies(self) -> list[Movies]:
-        log.info("Возврат списка фильмов.")
+        log.info("Получение списка фильмов.")
         return list(self.movies_slug.values())
 
     def get_by_slug(self, slug) -> Movies:
-        log.info("получение фильма %s", self.movies_slug.get(slug))
+        log.info("получение фильма пол slug %s", self.movies_slug.get(slug))
         return self.movies_slug.get(slug)
 
     def create_movie(self, movie_in: CreateMovies) -> Movies:
@@ -54,17 +54,18 @@ class MoviesStorage(BaseModel):
             **movie_in.model_dump(),
         )
         self.movies_slug[movie.slug] = movie
-        log.info("Making a new film = %s", movie.slug)
-        self.save_movie()
+        log.info("Создание нового фильма = %s", movie.slug)
         return movie
 
     def delete_by_slug(self, slug) -> None:
         self.movies_slug.pop(slug)
-        self.save_movie()
+        log.info("Удаление фильма")
+        # self.save_movie()
 
     def delete(self, movie: Movies) -> None:
         self.delete_by_slug(slug=movie.slug)
-        self.save_movie()
+        log.info("Удаление фильма")
+        # self.save_movie()
 
     def update_movie(
         self,
@@ -73,7 +74,7 @@ class MoviesStorage(BaseModel):
     ) -> Movies:
         for k, v in movie_data_in:
             setattr(movie, k, v)
-        self.save_movie()
+        # self.save_movie()
         return movie
 
     def movie_partial_update(
@@ -83,7 +84,7 @@ class MoviesStorage(BaseModel):
     ) -> Movies:
         for field_mane, value in movies_in.model_dump(exclude_unset=True).items():
             setattr(movies, field_mane, value)
-        self.save_movie()
+        # self.save_movie()
         return movies
 
 

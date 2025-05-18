@@ -8,6 +8,7 @@ DescriptionString = Annotated[
     str,
     MaxLen(100),
 ]
+
 SlugString = Annotated[
     str,
     Len(3, 10),

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from starlette import status
 
 from api.api_v1.movies.crud import movie_storage
@@ -30,8 +30,7 @@ def movies() -> list[Movies]:
 )
 def create_movie(
     movie_in: CreateMovies,
+    background_tasks: BackgroundTasks,
 ) -> Movies:
-    movie = movie_storage.create_movie(
-        movie_in=movie_in,
-    )
-    return movie
+    background_tasks.add_task(movie_storage.save_movie)
+    return movie_storage.create_movie(movie_in=movie_in)
