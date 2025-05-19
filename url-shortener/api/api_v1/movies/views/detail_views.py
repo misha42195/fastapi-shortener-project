@@ -2,13 +2,12 @@ from typing import Annotated
 
 from fastapi import (
     APIRouter,
-    BackgroundTasks,
 )
 from fastapi.params import Depends
 from starlette import status
 
 from api.api_v1.movies.crud import movie_storage
-from api.api_v1.movies.dependecies import prefetch_movie
+from api.api_v1.movies.dependecies import prefetch_movie, save_storage_state
 from schemas.muvies import (
     Movies,
     UpdateMovies,
@@ -55,11 +54,8 @@ def get_movie(
     response_model=MoviesRead,
 )
 def update_movie_details(
-    movie: MovieBySlug,
-    movie_data_in: UpdateMovies,
-    background_tasks: BackgroundTasks,
+    movie: MovieBySlug, movie_data_in: UpdateMovies, _=Depends(save_storage_state)
 ):
-    background_tasks.add_task(movie_storage.save_movie)
     return movie_storage.update_movie(
         movie=movie,
         movie_data_in=movie_data_in,
@@ -73,9 +69,7 @@ def update_movie_details(
 def update_movie_detail_partial(
     movie: MovieBySlug,
     movie_in: MoviesPartialUpdate,
-    background_tasks: BackgroundTasks,
 ):
-    background_tasks.add_task(movie_storage.save_movie)
     return movie_storage.movie_partial_update(
         movies=movie,
         movies_in=movie_in,
@@ -88,7 +82,5 @@ def update_movie_detail_partial(
 )
 def delete_movie(
     movie: MovieBySlug,
-    background_tasks: BackgroundTasks,
 ):
-    background_tasks.add_task(movie_storage.save_movie)
     movie_storage.delete(movie)

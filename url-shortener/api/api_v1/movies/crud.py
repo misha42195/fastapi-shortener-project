@@ -18,6 +18,8 @@ class MoviesStorage(BaseModel):
     movies_slug: dict[str, Movies] = {}
 
     def save_movie(self) -> None:
+        for _ in range(30_000):
+            PATH_TO_MOVIE_FILE.write_text(movie_storage.model_dump_json(indent=2))
         PATH_TO_MOVIE_FILE.write_text(movie_storage.model_dump_json(indent=2))
         log.info("Фильм сохранен в файл.")
 
@@ -46,7 +48,7 @@ class MoviesStorage(BaseModel):
         return list(self.movies_slug.values())
 
     def get_by_slug(self, slug) -> Movies:
-        log.info("получение фильма пол slug %s", self.movies_slug.get(slug))
+        log.info("получение фильма: %s", self.movies_slug.get(slug))
         return self.movies_slug.get(slug)
 
     def create_movie(self, movie_in: CreateMovies) -> Movies:
@@ -60,12 +62,10 @@ class MoviesStorage(BaseModel):
     def delete_by_slug(self, slug) -> None:
         self.movies_slug.pop(slug)
         log.info("Удаление фильма")
-        # self.save_movie()
 
     def delete(self, movie: Movies) -> None:
         self.delete_by_slug(slug=movie.slug)
         log.info("Удаление фильма")
-        # self.save_movie()
 
     def update_movie(
         self,
@@ -74,7 +74,7 @@ class MoviesStorage(BaseModel):
     ) -> Movies:
         for k, v in movie_data_in:
             setattr(movie, k, v)
-        # self.save_movie()
+        log.info("Фильм обновлен с %s до %s", movie.director, movie_data_in.description)
         return movie
 
     def movie_partial_update(
@@ -84,7 +84,6 @@ class MoviesStorage(BaseModel):
     ) -> Movies:
         for field_mane, value in movies_in.model_dump(exclude_unset=True).items():
             setattr(movies, field_mane, value)
-        # self.save_movie()
         return movies
 
 
