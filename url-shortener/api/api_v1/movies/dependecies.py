@@ -1,4 +1,7 @@
+from typing import Annotated
+
 from fastapi import HTTPException, BackgroundTasks
+from fastapi.params import Query
 from starlette import status
 import logging
 
@@ -6,6 +9,7 @@ from starlette.requests import Request
 
 from api.api_v1.movies.crud import movie_storage
 from schemas.muvies import Movies
+from core.config import API_TOKENS
 
 log = logging.getLogger(__name__)
 
@@ -43,3 +47,13 @@ def save_storage_state(
     if method.method in UNSAVE_METHODS:
         log.info("Добавление фоновой задачи. Сохранение состояния")
         background_tasks.add_task(movie_storage.save_movie)
+
+
+def required_api_token(
+    api_token: Annotated[str, Query],
+):
+    if api_token not in API_TOKENS:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect api-token",
+        )

@@ -7,7 +7,11 @@ from fastapi.params import Depends
 from starlette import status
 
 from api.api_v1.movies.crud import movie_storage
-from api.api_v1.movies.dependecies import prefetch_movie, save_storage_state
+from api.api_v1.movies.dependecies import (
+    prefetch_movie,
+    save_storage_state,
+    required_api_token,
+)
 from schemas.muvies import (
     Movies,
     UpdateMovies,
@@ -54,7 +58,9 @@ def get_movie(
     response_model=MoviesRead,
 )
 def update_movie_details(
-    movie: MovieBySlug, movie_data_in: UpdateMovies, _=Depends(save_storage_state)
+    movie: MovieBySlug,
+    movie_data_in: UpdateMovies,
+    # _=Depends(required_api_token),
 ):
     return movie_storage.update_movie(
         movie=movie,
@@ -69,6 +75,7 @@ def update_movie_details(
 def update_movie_detail_partial(
     movie: MovieBySlug,
     movie_in: MoviesPartialUpdate,
+    # _=Depends(required_api_token),
 ):
     return movie_storage.movie_partial_update(
         movies=movie,
@@ -82,5 +89,6 @@ def update_movie_detail_partial(
 )
 def delete_movie(
     movie: MovieBySlug,
+    # _=Depends(required_api_token),
 ):
     movie_storage.delete(movie)
