@@ -22,15 +22,24 @@ def prefetch_movie(slug: str) -> Movies:
     )
 
 
+UNSAVE_METHODS = frozenset(
+    {
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+    }
+)
+
+
 def save_storage_state(
     background_tasks: BackgroundTasks,
     method: Request,
 ):
     # до входа в представление view
-    log.info("Код до вызова представления")
+    log.info("Метод запроса %r ", method.method)
     yield
     # после выхода из представления
-    if method.method == "GET":
-        return
-    log.info("Добавление фоновой задачи. Сохранение состояния")
-    background_tasks.add_task(movie_storage.save_movie)
+    if method.method in UNSAVE_METHODS:
+        log.info("Добавление фоновой задачи. Сохранение состояния")
+        background_tasks.add_task(movie_storage.save_movie)
