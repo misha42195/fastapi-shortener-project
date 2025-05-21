@@ -9,8 +9,6 @@ from starlette import status
 from api.api_v1.movies.crud import movie_storage
 from api.api_v1.movies.dependecies import (
     prefetch_movie,
-    save_storage_state,
-    required_api_token,
 )
 from schemas.muvies import (
     Movies,
@@ -28,7 +26,7 @@ router = APIRouter(
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "Movie 'bbb' not found",
+                        "detail": "Movie 'lost' not found",
                     },
                 },
             },

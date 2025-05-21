@@ -5,7 +5,7 @@ from starlette import status
 from api.api_v1.movies.crud import movie_storage
 from api.api_v1.movies.dependecies import (
     save_storage_state,
-    required_api_token,
+    required_api_token_for_unsave_methods,
 )
 
 from schemas.muvies import (
@@ -19,8 +19,20 @@ router = APIRouter(
     tags=["Movies"],
     dependencies=[
         Depends(save_storage_state),
-        Depends(required_api_token),
+        Depends(required_api_token_for_unsave_methods),
     ],
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Unauthenticated. Only for unsafe methods",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Invalid API token",
+                    },
+                },
+            },
+        },
+    },
 )
 
 
@@ -39,6 +51,7 @@ def movies() -> list[Movies]:
 )
 def create_movie(
     movie_in: CreateMovies,
-    # _=Depends(required_api_token),
 ) -> Movies:
-    return movie_storage.create_movie(movie_in=movie_in)
+    return movie_storage.create_movie(
+        movie_in=movie_in,
+    )

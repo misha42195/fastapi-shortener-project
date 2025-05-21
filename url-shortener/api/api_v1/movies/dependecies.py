@@ -1,20 +1,21 @@
+import logging
 from typing import Annotated
 
 from fastapi import HTTPException, BackgroundTasks
-from fastapi.params import Query
+from fastapi.params import Query, Header
 from starlette import status
-import logging
-
 from starlette.requests import Request
 
 from api.api_v1.movies.crud import movie_storage
-from schemas.muvies import Movies
 from core.config import API_TOKENS
+from schemas.muvies import Movies
 
 log = logging.getLogger(__name__)
 
 
-def prefetch_movie(slug: str) -> Movies:
+def prefetch_movie(
+    slug: str,
+) -> Movies:
     movie: Movies | None = movie_storage.get_by_slug(
         slug=slug,
     )
@@ -49,9 +50,16 @@ def save_storage_state(
         background_tasks.add_task(movie_storage.save_movie)
 
 
-def required_api_token(
-    api_token: Annotated[str, Query],
+def required_api_token_for_unsave_methods(
+    request: Request,
+    api_token: Annotated[
+        str,
+        Header(alias="x-auth-token"),
+    ] = "",
 ):
+    if request.method not in UNSAVE_METHODS:
+        return
+
     if api_token not in API_TOKENS:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
