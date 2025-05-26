@@ -1,7 +1,11 @@
 import logging
 from typing import Annotated
 
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi.security import (
+    HTTPAuthorizationCredentials,
+    HTTPBasicCredentials,
+    HTTPBasic,
+)
 from fastapi import HTTPException, BackgroundTasks
 from fastapi.security import HTTPBearer
 from fastapi.params import Depends
@@ -9,7 +13,7 @@ from starlette import status
 from starlette.requests import Request
 
 from api.api_v1.movies.crud import movie_storage
-from core.config import API_TOKENS
+from core.config import API_TOKENS, DB_USERNAME
 from schemas.muvies import Movies
 
 log = logging.getLogger(__name__)
@@ -81,3 +85,30 @@ def required_api_token_for_unsave_methods(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect api-token",
         )
+
+
+secrets = HTTPBasic(
+    auto_error=False,
+    scheme_name="Схема с полями: username, password",
+    description="Объект предоставляющий поля для авторизации",
+)
+
+
+def user_basic_auth_required(
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(secrets),
+    ] = None,
+):
+    log.info("credentials %s", credentials)
+    if (
+        credentials
+        and credentials.username in DB_USERNAME
+        and DB_USERNAME[credentials.username] == credentials.password
+    ):
+        return
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="User credentials is required. Invalid username or password",
+        headers={"WWW-Authenticate": "Basic"},
+    )
