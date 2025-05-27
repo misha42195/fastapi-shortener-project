@@ -5,15 +5,22 @@ from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBasicCredentials,
     HTTPBasic,
+    HTTPBearer,
 )
-from fastapi import HTTPException, BackgroundTasks
-from fastapi.security import HTTPBearer
+from fastapi import (
+    HTTPException,
+    BackgroundTasks,
+    status,
+    Request,
+)
 from fastapi.params import Depends
-from starlette import status
-from starlette.requests import Request
 
 from api.api_v1.movies.crud import movie_storage
-from core.config import API_TOKENS, DB_USERNAME
+from core.config import (
+    API_TOKENS,
+    DB_USERNAME,
+    UNSAVE_METHODS,
+)
 from schemas.muvies import Movies
 
 log = logging.getLogger(__name__)
@@ -31,16 +38,6 @@ def prefetch_movie(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Movie {slug!r} not found",
     )
-
-
-UNSAVE_METHODS = frozenset(
-    {
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-    }
-)
 
 
 def save_storage_state(
@@ -94,13 +91,16 @@ secrets = HTTPBasic(
 )
 
 
-def user_basic_auth_required(
+def user_basic_auth_required_for_unsave_methods(
+    request: Request,
     credentials: Annotated[
         HTTPBasicCredentials | None,
         Depends(secrets),
     ] = None,
 ):
     log.info("credentials %s", credentials)
+    if request.method not in UNSAVE_METHODS:
+        return
     if (
         credentials
         and credentials.username in DB_USERNAME
@@ -111,4 +111,58 @@ def user_basic_auth_required(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="User credentials is required. Invalid username or password",
         headers={"WWW-Authenticate": "Basic"},
+    )
+
+
+def validate_api_token(
+    api_token: Annotated[
+        HTTPAuthorizationCredentials | None,
+        Depends(static_api_token),
+    ] = None,
+):
+    log.info("api token %s", api_token)
+    if (api_token is None) or (api_token.credentials not in API_TOKENS):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="API token is required",
+        )
+
+
+def validate_user_basic(
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(secrets),
+    ] = None,
+):
+    log.info("credentials %s", credentials)
+
+    if (
+        not credentials
+        or (credentials.username not in DB_USERNAME)
+        or (DB_USERNAME[credentials.username] != credentials.password)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API token or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+
+def user_basic_or_api_token_required(
+    request: Request,
+    api_token: Annotated[
+        HTTPAuthorizationCredentials | None, Depends(static_api_token)
+    ] = None,
+    credentials: Annotated[HTTPBasicCredentials | None, Depends(secrets)] = None,
+):
+    if request.method not in UNSAVE_METHODS:
+        return None
+    if api_token:
+        return validate_api_token(api_token=api_token)
+    if credentials:
+        return validate_user_basic(credentials=credentials)
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Log in using a token or login and password",
+        headers={"WWW-Authenticate": "Bearer, Basic"},
     )

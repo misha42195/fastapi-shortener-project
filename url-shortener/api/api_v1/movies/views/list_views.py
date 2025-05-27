@@ -5,8 +5,7 @@ from starlette import status
 from api.api_v1.movies.crud import movie_storage
 from api.api_v1.movies.dependecies import (
     save_storage_state,
-    required_api_token_for_unsave_methods,
-    user_basic_auth_required,
+    user_basic_or_api_token_required,
 )
 
 from schemas.muvies import (
@@ -20,8 +19,7 @@ router = APIRouter(
     tags=["Movies"],
     dependencies=[
         Depends(save_storage_state),
-        # Depends(required_api_token_for_unsave_methods),
-        Depends(user_basic_auth_required),
+        Depends(user_basic_or_api_token_required),
     ],
     responses={
         status.HTTP_401_UNAUTHORIZED: {
