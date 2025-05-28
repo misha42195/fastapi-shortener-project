@@ -21,16 +21,21 @@ UNSAVE_METHODS = frozenset(
         "DELETE",
     }
 )
-API_TOKENS = frozenset(
-    {
-        "kCfNDf_FYwzLlZHj8v7oZvk0O8k",
-        "igcGEPmVXNQC8tTdUCDKsPzDFWc",
-        "FOhbQbqnIF8xIe7HXgQvXwFp1Lg",
-    }
-)
+# tokens for testing
+# 1) "idV8XTAfbS2JOh7690mHlA"
+# 2) "bsXxwPUJ6jo26PAK3mPG9g"
+# 3) "HKieZrytophWYQWVlQ3Z2g"
+
 
 DB_USERNAME: dict[str, str] = {
     # username: password
     "bob": "1234",
     "sem": "qwerty",
 }
+
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
+REDIS_DB_NUM = 0
+REDIS_TOKEN_DB_NUM = 1
+
+API_TOKEN_SET_NAME = "tokens"

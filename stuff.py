@@ -1,19 +1,16 @@
 from redis import Redis
 
-from core.config import (
-    REDIS_HOST,
-    REDIS_PORT,
-    REDIS_DB,
-)
+from core import config
 
 redis = Redis(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    db=REDIS_DB,
+    host=config.REDIS_HOST,
+    port=config.REDIS_PORT,
+    db=config.REDIS_DB_NUM,
     decode_responses=True,
 )
 
 if __name__ == "__main__":
+    print(redis.ping())
     redis.set("name", "Misha")
     redis.set("age", 36)
     redis.set("foo", "bar")

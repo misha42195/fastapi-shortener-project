@@ -17,11 +17,12 @@ from fastapi.params import Depends
 
 from api.api_v1.movies.crud import movie_storage
 from core.config import (
-    API_TOKENS,
+    API_TOKEN_SET_NAME,
     DB_USERNAME,
     UNSAVE_METHODS,
 )
 from schemas.muvies import Movies
+from api.api_v1.movies.views.redis import redis_token
 
 log = logging.getLogger(__name__)
 
@@ -58,30 +59,6 @@ static_api_token = HTTPBearer(
     description="Your **api token** for developer portal [read more](#) ",
     auto_error=False,
 )
-
-
-def required_api_token_for_unsave_methods(
-    request: Request,
-    api_token: Annotated[
-        HTTPAuthorizationCredentials | None,
-        Depends(static_api_token),
-    ] = None,
-):
-    log.info("API token %s", api_token)
-    if request.method not in UNSAVE_METHODS:
-        return
-
-    if api_token.credentials is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="API token is required",
-        )
-
-    if api_token.credentials not in API_TOKENS:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect api-token",
-        )
 
 
 secrets = HTTPBasic(
@@ -121,11 +98,13 @@ def validate_api_token(
     ] = None,
 ):
     log.info("api token %s", api_token)
-    if (api_token is None) or (api_token.credentials not in API_TOKENS):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="API token is required",
-        )
+    if redis_token.sismember(API_TOKEN_SET_NAME, api_token.credentials):
+        return
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid API token",
+    )
 
 
 def validate_user_basic(
