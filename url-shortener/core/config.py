@@ -35,7 +35,7 @@ DB_USERNAME: dict[str, str] = {
 
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
-REDIS_DB_NUM = 0
+# REDIS_DB_NUM = 0
 REDIS_TOKEN_DB_NUM = 1
 
 API_TOKEN_SET_NAME = "tokens"

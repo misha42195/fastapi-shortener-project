@@ -1,4 +1,5 @@
 import logging
+
 from typing import Annotated
 
 from fastapi.security import (
@@ -14,7 +15,6 @@ from fastapi import (
     Request,
 )
 from fastapi.params import Depends
-
 from api.api_v1.movies.crud import movie_storage
 from core.config import (
     API_TOKEN_SET_NAME,
@@ -98,7 +98,9 @@ def validate_api_token(
     ] = None,
 ):
     log.info("api token %s", api_token)
-    if redis_token.sismember(API_TOKEN_SET_NAME, api_token.credentials):
+    if redis_token.token_exists(
+        api_token.credentials,
+    ):
         return
 
     raise HTTPException(
@@ -130,9 +132,13 @@ def validate_user_basic(
 def user_basic_or_api_token_required(
     request: Request,
     api_token: Annotated[
-        HTTPAuthorizationCredentials | None, Depends(static_api_token)
+        HTTPAuthorizationCredentials | None,
+        Depends(static_api_token),
     ] = None,
-    credentials: Annotated[HTTPBasicCredentials | None, Depends(secrets)] = None,
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(secrets),
+    ] = None,
 ):
     if request.method not in UNSAVE_METHODS:
         return None
