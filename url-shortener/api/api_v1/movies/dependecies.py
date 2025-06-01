@@ -22,7 +22,8 @@ from core.config import (
     UNSAVE_METHODS,
 )
 from schemas.muvies import Movies
-from api.api_v1.movies.views.redis import redis_token
+from api.api_v1.auth.services.redis_tokens_helper import redis_tokens
+from api.api_v1.auth.services.redis_usres_helper import redis_user_auth
 
 log = logging.getLogger(__name__)
 
@@ -98,7 +99,7 @@ def validate_api_token(
     ] = None,
 ):
     log.info("api token %s", api_token)
-    if redis_token.token_exists(
+    if redis_tokens.token_exists(
         api_token.credentials,
     ):
         return
@@ -117,16 +118,16 @@ def validate_user_basic(
 ):
     log.info("credentials %s", credentials)
 
-    if (
-        not credentials
-        or (credentials.username not in DB_USERNAME)
-        or (DB_USERNAME[credentials.username] != credentials.password)
+    if credentials and redis_user_auth.validate_user_password(
+        username=credentials.username,
+        password=credentials.password,
     ):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid API token or password",
-            headers={"WWW-Authenticate": "Basic"},
-        )
+        return
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid API token or password",
+        headers={"WWW-Authenticate": "Basic"},
+    )
 
 
 def user_basic_or_api_token_required(
