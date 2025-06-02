@@ -58,7 +58,14 @@ class MoviesStorage(BaseModel):
 
     def get_by_slug(self, slug) -> Movies:
         log.info("получение фильма: %s", self.movies_slug.get(slug))
-        return self.movies_slug.get(slug)
+        movie_json = redis_movies.hget(
+            config.REDIS_MOVIES_SET_NAME,
+            slug,
+        )
+        if movie_json:
+            movie_by_slug = Movies.model_validate_json(movie_json)
+            log.info("Фильм найден %s", movie_by_slug.title)
+            return movie_by_slug
 
     def create_movie(
         self,
