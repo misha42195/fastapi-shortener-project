@@ -54,18 +54,24 @@ class MoviesStorage(BaseModel):
 
     def get_movies(self) -> list[Movies]:
         log.info("Получение списка фильмов.")
-        return list(self.movies_slug.values())
-
-    def get_by_slug(self, slug) -> Movies:
-        log.info("получение фильма: %s", self.movies_slug.get(slug))
-        movie_json = redis_movies.hget(
+        movies_list = redis_movies.hvals(
             config.REDIS_MOVIES_SET_NAME,
-            slug,
+        )
+        movies = [Movies.model_validate_json(movies) for movies in movies_list]
+        log.info("Список фильмов %s", movies)
+
+        return movies
+
+    def get_by_slug(self, slug) -> Movies | None:
+        log.info("получение фильма: %s", self.movies_slug.get(slug))
+
+        movie_json = redis_movies.hget(
+            name=config.REDIS_MOVIES_SET_NAME,
+            key=slug,
         )
         if movie_json:
-            movie_by_slug = Movies.model_validate_json(movie_json)
-            log.info("Фильм найден %s", movie_by_slug.title)
-            return movie_by_slug
+            return Movies.model_validate_json(movie_json)
+        return None
 
     def create_movie(
         self,
