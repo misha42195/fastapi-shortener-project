@@ -95,8 +95,14 @@ class MoviesStorage(BaseModel):
         log.info("Создание нового фильма = %s", movie.slug)
         return movie
 
-    def delete_by_slug(self, slug) -> None:
-        self.movies_slug.pop(slug)
+    def delete_by_slug(
+        self,
+        slug: str,
+    ) -> None:
+        redis_movies.hdel(
+            config.REDIS_MOVIES_SET_NAME,
+            slug,
+        )
         log.info("Удаление фильма")
 
     def delete(self, movie: Movies) -> None:
