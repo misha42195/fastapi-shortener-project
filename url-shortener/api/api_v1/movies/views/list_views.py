@@ -1,8 +1,10 @@
-from fastapi import APIRouter
+from typing import Any
+
+from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from starlette import status
 
-from api.api_v1.movies.crud import movie_storage
+from api.api_v1.movies.crud import movie_storage, redis_movies
 from api.api_v1.movies.dependecies import (
     user_basic_or_api_token_required,
 )
@@ -30,6 +32,16 @@ router = APIRouter(
                 },
             },
         },
+        status.HTTP_409_CONFLICT: {
+            "description": "This movie already exists in the database.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Movie with slug='foobar' already exists.",
+                    }
+                }
+            },
+        },
     },
 )
 
@@ -49,7 +61,12 @@ def movies() -> list[Movies]:
 )
 def create_movie(
     movie_in: CreateMovies,
-) -> Movies:
-    return movie_storage.create_movie(
-        movie_in=movie_in,
+) -> HTTPException | Any:
+    if not movie_storage.get_by_slug(movie_in.slug):
+        return movie_storage.create_movie(
+            movie_in=movie_in,
+        )
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail=f"Movie with slug={movie_in.slug!r} already exists.",
     )
