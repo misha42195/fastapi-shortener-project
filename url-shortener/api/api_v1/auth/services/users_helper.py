@@ -4,10 +4,10 @@ from abc import (
 )
 
 
-class AbstractUserHelper(ABC):
+class AbstractUsersHelper(ABC):
     """
-    - получение пароля по имени пользователя
-    - проверка пароля на совпадение с тем что в БД.
+    - получение пароля по имени пользователя или ничего
+    - проверка полученного пароля из базы с тем, что прислал пользователь
     """
 
     @abstractmethod
@@ -16,43 +16,32 @@ class AbstractUserHelper(ABC):
         username: str,
     ) -> str | None:
         """
-        По переданному имени находит пароль.
 
-        Возвращает пароль, если есть.
-
-        :param username: - имя пользователя.
-        :type username: - строка
-        :return: - пароль пользователя, если найден
-        :rtype: - строка
+        :param username: - имя пользователя
+        :type username: - str
+        :return: - пароль если он получен
+        :rtype:  - str
         """
 
     @classmethod
-    def validate_password_match(
+    def validate_password(
         cls,
-        password1: str,
-        password2: str,
+        password1,
+        password2,
     ):
         return password1 == password2
 
-    def validate_user_password(
+    def validate_password_match(
         self,
         username: str,
         password: str,
-    ) -> bool:
-        """
-        Проверить, валиден ли пароль.
-
-        :param username: - чей пароль проверяем
-        :type username: - строка
-        :param password: - переданный пароль, сверить с тем, что в БД.
-        :type password: - строка
-        :return: - True, если совпадает, иначе False
-        :rtype:  - bool
-        """
-        db_password = self.get_user_password(username)
-        if db_password is None:
+    ):
+        password_db = self.get_user_password(
+            username=username,
+        )
+        if password_db is None:
             return False
-        return self.validate_password_match(
-            password1=db_password,
+        return self.validate_password(
+            password1=password_db,
             password2=password,
         )

@@ -35,7 +35,15 @@ DB_USERNAME: dict[str, str] = {
 
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
-# REDIS_DB_NUM = 0
+
 REDIS_TOKEN_DB_NUM = 1
 
-API_TOKEN_SET_NAME = "tokens"
+REDIS_USER_DB_NUM = 2
+
+REDIS_MOVIES_DB_NUM = 3
+
+REDIS_TOKEN_SET_NAME = "tokens"
+
+REDIS_USER_SET_NAME = "users"
+
+REDIS_MOVIES_SET_NAME = "movies"

@@ -1,7 +1,9 @@
 import logging
 
 from pydantic import BaseModel, ValidationError
+from redis import Redis
 
+from core import config
 from core.config import PATH_TO_MOVIE_FILE
 
 from schemas.muvies import (
@@ -12,6 +14,13 @@ from schemas.muvies import (
 )
 
 log = logging.getLogger(__name__)
+
+redis_movies = Redis(
+    host=config.REDIS_HOST,
+    port=config.REDIS_PORT,
+    db=config.REDIS_MOVIES_DB_NUM,
+    decode_responses=True,
+)
 
 
 class MoviesStorage(BaseModel):
@@ -51,11 +60,18 @@ class MoviesStorage(BaseModel):
         log.info("получение фильма: %s", self.movies_slug.get(slug))
         return self.movies_slug.get(slug)
 
-    def create_movie(self, movie_in: CreateMovies) -> Movies:
+    def create_movie(
+        self,
+        movie_in: CreateMovies,
+    ) -> Movies:
         movie = Movies(
             **movie_in.model_dump(),
         )
-        self.movies_slug[movie.slug] = movie
+        redis_movies.hset(
+            config.REDIS_MOVIES_SET_NAME,
+            movie.slug,
+            movie.model_dump_json(),
+        )
         log.info("Создание нового фильма = %s", movie.slug)
         return movie
 
@@ -86,35 +102,5 @@ class MoviesStorage(BaseModel):
             setattr(movies, field_mane, value)
         return movies
 
-
-# movie_storage = MoviesStorage()
-#
-# movie_storage.create_movie(
-#     CreateMovies(
-#         slug="shoushenka",
-#         title="Побег из Шоушенка",
-#         description="Два заключённых сближаются за годы заключения, находя утешение и надежду на свободу.",
-#         release_year=date(1994, 9, 22),
-#         director="Фрэнк Дарабонт",
-#     )
-# )
-# movie_storage.create_movie(
-#     CreateMovies(
-#         slug="father",
-#         title="Крёстный отец",
-#         description="Стареющий глава мафиозной семьи передаёт власть своему неохотному сыну.",
-#         release_year=date(1972, 3, 24),
-#         director="Фрэнсис Форд Коппола",
-#     )
-# )
-# movie_storage.create_movie(
-#     CreateMovies(
-#         slug="start",
-#         title="Начало",
-#         description="Вор использует технологию проникновения в сны, чтобы внедрить идею в сознание цели.",
-#         release_year=date(2010, 7, 16),
-#         director="Кристофер Нолан",
-#     ),
-# )
 
 movie_storage = MoviesStorage()

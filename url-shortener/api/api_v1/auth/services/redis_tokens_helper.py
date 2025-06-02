@@ -43,5 +43,5 @@ redis_tokens = RedisToken(
     host=config.REDIS_HOST,
     port=config.REDIS_PORT,
     db=config.REDIS_TOKEN_DB_NUM,
-    set_token=config.API_TOKEN_SET_NAME,
+    set_token=config.REDIS_TOKEN_SET_NAME,
 )

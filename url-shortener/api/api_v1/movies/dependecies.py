@@ -17,13 +17,12 @@ from fastapi import (
 from fastapi.params import Depends
 from api.api_v1.movies.crud import movie_storage
 from core.config import (
-    API_TOKEN_SET_NAME,
     DB_USERNAME,
     UNSAVE_METHODS,
 )
 from schemas.muvies import Movies
 from api.api_v1.auth.services.redis_tokens_helper import redis_tokens
-from api.api_v1.auth.services.redis_usres_helper import redis_user_auth
+from api.api_v1.auth.services.redis_users_helper import redis_users
 
 log = logging.getLogger(__name__)
 
@@ -118,9 +117,9 @@ def validate_user_basic(
 ):
     log.info("credentials %s", credentials)
 
-    if credentials and redis_user_auth.validate_user_password(
-        username=credentials.username,
-        password=credentials.password,
+    if credentials and redis_users.validate_password_match(
+        credentials.username,
+        credentials.password,
     ):
         return
     raise HTTPException(
