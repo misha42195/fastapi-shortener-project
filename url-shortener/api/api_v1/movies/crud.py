@@ -32,6 +32,16 @@ class MoviesStorage(BaseModel):
         PATH_TO_MOVIE_FILE.write_text(movie_storage.model_dump_json(indent=2))
         log.info("Фильм сохранен в файл.")
 
+    def save_movie_in_db(
+        self,
+        movie: Movies,
+    ):
+        redis_movies.hset(
+            name=config.REDIS_MOVIES_SET_NAME,
+            key=movie.slug,
+            value=movie.model_dump_json(),
+        )
+
     def load_movie(self) -> "MoviesStorage":
         if not PATH_TO_MOVIE_FILE.exists():
             log.info("Файл хранения фильмов не существует")
@@ -80,11 +90,8 @@ class MoviesStorage(BaseModel):
         movie = Movies(
             **movie_in.model_dump(),
         )
-        redis_movies.hset(
-            config.REDIS_MOVIES_SET_NAME,
-            movie.slug,
-            movie.model_dump_json(),
-        )
+        self.save_movie_in_db(movie)
+
         log.info("Создание нового фильма = %s", movie.slug)
         return movie
 
@@ -103,6 +110,7 @@ class MoviesStorage(BaseModel):
     ) -> Movies:
         for k, v in movie_data_in:
             setattr(movie, k, v)
+        self.save_movie_in_db(movie)
         log.info("Фильм обновлен с %s до %s", movie.director, movie_data_in.description)
         return movie
 
@@ -113,6 +121,7 @@ class MoviesStorage(BaseModel):
     ) -> Movies:
         for field_mane, value in movies_in.model_dump(exclude_unset=True).items():
             setattr(movies, field_mane, value)
+        self.save_movie_in_db(movies)
         return movies
 
 
