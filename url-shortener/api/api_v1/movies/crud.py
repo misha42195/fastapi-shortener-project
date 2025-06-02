@@ -1,10 +1,9 @@
 import logging
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 from redis import Redis
 
 from core import config
-from core.config import PATH_TO_MOVIE_FILE
 
 from schemas.muvies import (
     Movies,
@@ -26,12 +25,6 @@ redis_movies = Redis(
 class MoviesStorage(BaseModel):
     movies_slug: dict[str, Movies] = {}
 
-    def save_movie(self) -> None:
-        for _ in range(30_000):
-            PATH_TO_MOVIE_FILE.write_text(movie_storage.model_dump_json(indent=2))
-        PATH_TO_MOVIE_FILE.write_text(movie_storage.model_dump_json(indent=2))
-        log.info("Фильм сохранен в файл.")
-
     def save_movie_in_db(
         self,
         movie: Movies,
@@ -41,26 +34,6 @@ class MoviesStorage(BaseModel):
             key=movie.slug,
             value=movie.model_dump_json(),
         )
-
-    def load_movie(self) -> "MoviesStorage":
-        if not PATH_TO_MOVIE_FILE.exists():
-            log.info("Файл хранения фильмов не существует")
-            return MoviesStorage()
-
-        return self.__class__.model_validate_json(PATH_TO_MOVIE_FILE.read_text())
-
-    def init_storage_from_state(self) -> None:
-        try:
-            data = MoviesStorage().load_movie()
-        except ValidationError:
-            self.save_movie()
-            log.warning("Восстановленные данные из файла хранения.")
-            return
-
-        self.movies_slug.update(
-            data.movies_slug,
-        )
-        log.warning("Восстановленные данные из файла хранения.")
 
     def get_movies(self) -> list[Movies]:
         log.info("Получение списка фильмов.")
@@ -73,7 +46,7 @@ class MoviesStorage(BaseModel):
         return movies
 
     def get_by_slug(self, slug) -> Movies | None:
-        log.info("получение фильма: %s", self.movies_slug.get(slug))
+        log.info("получение фильма: %s", slug)
 
         movie_json = redis_movies.hget(
             name=config.REDIS_MOVIES_SET_NAME,

@@ -4,7 +4,6 @@ from starlette import status
 
 from api.api_v1.movies.crud import movie_storage
 from api.api_v1.movies.dependecies import (
-    save_storage_state,
     user_basic_or_api_token_required,
 )
 
@@ -18,7 +17,6 @@ router = APIRouter(
     prefix="/movies",
     tags=["Movies"],
     dependencies=[
-        Depends(save_storage_state),
         Depends(user_basic_or_api_token_required),
     ],
     responses={

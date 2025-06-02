@@ -41,19 +41,19 @@ def prefetch_movie(
     )
 
 
-def save_storage_state(
-    background_tasks: BackgroundTasks,
-    method: Request,
-):
-    # до входа в представление view
-    log.info("Метод запроса %r ", method.method)
-    yield
-    # после выхода из представления
-    if method.method in UNSAVE_METHODS:
-        log.info("Добавление фоновой задачи. Сохранение состояния")
-        background_tasks.add_task(
-            movie_storage.save_movie,
-        )
+# def save_storage_state(
+#     background_tasks: BackgroundTasks,
+#     method: Request,
+# ):
+#     # до входа в представление view
+#     log.info("Метод запроса %r ", method.method)
+#     yield
+#     # после выхода из представления
+#     if method.method in UNSAVE_METHODS:
+#         log.info("Добавление фоновой задачи. Сохранение состояния")
+#         background_tasks.add_task(
+#             movie_storage.save_movie,
+#         )
 
 
 static_api_token = HTTPBearer(
