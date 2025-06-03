@@ -10,6 +10,7 @@ from schemas.muvies import (
     CreateMovies,
     UpdateMovies,
     MoviesPartialUpdate,
+    MoviesBase,
 )
 
 log = logging.getLogger(__name__)
@@ -20,6 +21,18 @@ redis_movies = Redis(
     db=config.REDIS_MOVIES_DB_NUM,
     decode_responses=True,
 )
+
+
+class MoviesBaseErr(Exception):
+    """
+    Base exception class for movie-related errors.
+    """
+
+
+class MovieAlreadyExistsError(MoviesBaseErr):
+    """
+    Raised when attempting to create a movie that already exists.
+    """
 
 
 class MoviesStorage(BaseModel):
@@ -45,6 +58,15 @@ class MoviesStorage(BaseModel):
 
         return movies
 
+    def exists(
+        self,
+        slug: str,
+    ) -> bool:
+        return redis_movies.hexists(
+            config.REDIS_MOVIES_SET_NAME,
+            slug,
+        )
+
     def get_by_slug(self, slug) -> Movies | None:
         log.info("получение фильма: %s", slug)
 
@@ -67,6 +89,14 @@ class MoviesStorage(BaseModel):
 
         log.info("Создание нового фильма = %s", movie.slug)
         return movie
+
+    def create_raise_already_exists(
+        self,
+        movie_in,
+    ):
+        if not self.exists(movie_in.slug):
+            return movie_storage.create_movie(movie_in)
+        raise MovieAlreadyExistsError(movie_in.slug)
 
     def delete_by_slug(
         self,
