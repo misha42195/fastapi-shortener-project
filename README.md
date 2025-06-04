@@ -41,5 +41,5 @@ GET/?name=Mish
 
 ### Snippets
 ```shell
-python -c 'import secrets; print(secrets.token_urlsafe(20))'
+# python -c "import secrets; print(secrets.token_urlsafe(20))"
 ```

@@ -21,9 +21,14 @@ class AbstractRedisToken(ABC):
     def generate_token(cls) -> str:
         return secrets.token_urlsafe(16)
 
+    @abstractmethod
+    def get_tokens(self) -> list[str]:
+        """
+        Получение списка токенов из базы
+        """
 
     @abstractmethod
-    def get_tokens(self):
-       """
-       Получение списка токенов из базы
-       """
+    def delete_token(self, token: str) -> bool:
+        """
+        Удаление токена из базы
+        """

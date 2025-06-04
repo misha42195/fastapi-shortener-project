@@ -21,11 +21,19 @@ class RedisToken(AbstractRedisToken):
         )
         self.token_set = set_token
 
-    def get_tokens(self):
+    def delete_token(self, token: str) -> bool:
+        return bool(
+            self.redis.srem(
+                config.REDIS_TOKEN_SET_NAME,
+                token,
+            )
+        )
+
+    def get_tokens(self) -> list[str]:
         """
         получение списка токенов
         """
-        return self.redis.smembers(config.REDIS_TOKEN_SET_NAME)
+        return list(self.redis.smembers(config.REDIS_TOKEN_SET_NAME))
 
     def token_exists(
         self,
@@ -38,12 +46,13 @@ class RedisToken(AbstractRedisToken):
             ),
         )
 
-    def add_token(self) -> None:
+    def add_token(self) -> str:
         token = self.generate_token()
         self.redis.sadd(
             self.token_set,
             token,
         )
+        return token
 
 
 redis_tokens = RedisToken(

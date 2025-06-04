@@ -3,7 +3,7 @@ __all__ = ("app",)
 import typer
 
 from commands.hello import app as hello_app
-from commands.tokens import app as check_app
+from commands.token import app as check_app
 from commands.lists import app as tokens_app
 
 
