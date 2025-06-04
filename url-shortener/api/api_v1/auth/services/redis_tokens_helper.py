@@ -5,6 +5,7 @@ from core import config
 
 
 class RedisToken(AbstractRedisToken):
+
     def __init__(
         self,
         host: str,
@@ -19,6 +20,12 @@ class RedisToken(AbstractRedisToken):
             decode_responses=True,
         )
         self.token_set = set_token
+
+    def get_tokens(self):
+        """
+        получение списка токенов
+        """
+        return self.redis.smembers(config.REDIS_TOKEN_SET_NAME)
 
     def token_exists(
         self,

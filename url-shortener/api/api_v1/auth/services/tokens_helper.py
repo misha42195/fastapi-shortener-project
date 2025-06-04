@@ -20,3 +20,10 @@ class AbstractRedisToken(ABC):
     @classmethod
     def generate_token(cls) -> str:
         return secrets.token_urlsafe(16)
+
+
+    @abstractmethod
+    def get_tokens(self):
+       """
+       Получение списка токенов из базы
+       """
