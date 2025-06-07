@@ -1,3 +1,6 @@
+__all__ = ("redis_tokens",)
+
+
 from redis import Redis
 
 from api.api_v1.auth.services.tokens_helper import AbstractRedisToken
@@ -47,7 +50,7 @@ class RedisToken(AbstractRedisToken):
         )
 
     def add_token(self) -> str:
-        token = self.generate_token()
+        token: str = self.generate_token()
         self.redis.sadd(
             self.token_set,
             token,

@@ -1,3 +1,4 @@
+__all__ = ("AbstractRedisToken",)
 import secrets
 from abc import ABC, abstractmethod
 
@@ -14,7 +15,7 @@ class AbstractRedisToken(ABC):
         pass
 
     @abstractmethod
-    def add_token(self) -> None:
+    def add_token(self) -> str | None:
         pass
 
     @classmethod

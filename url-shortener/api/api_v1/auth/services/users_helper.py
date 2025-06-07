@@ -26,16 +26,16 @@ class AbstractUsersHelper(ABC):
     @classmethod
     def validate_password(
         cls,
-        password1,
-        password2,
-    ):
+        password1: str,
+        password2: str,
+    ) -> bool:
         return password1 == password2
 
     def validate_password_match(
         self,
         username: str,
         password: str,
-    ):
+    ) -> bool:
         password_db = self.get_user_password(
             username=username,
         )
