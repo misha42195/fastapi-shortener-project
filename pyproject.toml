@@ -75,6 +75,8 @@ select = [
     "FAST",
     "ANN", # flake8-annotations (ANN)
     "FAST", # FastAPI (FAST)
+    "I", # isort (I)
+    "F", # PyFlakes (F)
 ]
 ignore = [
 ]
