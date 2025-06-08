@@ -132,6 +132,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "mypy" },
+    { name = "ruff" },
 ]
 
 [package.metadata]
