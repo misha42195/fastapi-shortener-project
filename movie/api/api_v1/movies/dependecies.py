@@ -14,14 +14,14 @@ from fastapi.security import (
     HTTPBearer,
 )
 
-from api.api_v1.auth.services.redis_tokens_helper import redis_tokens
-from api.api_v1.auth.services.redis_users_helper import redis_users
-from api.api_v1.movies.crud import movie_storage
-from core.config import (
+from movie.api.api_v1.auth.services.redis_tokens_helper import redis_tokens
+from movie.api.api_v1.auth.services.redis_users_helper import redis_users
+from movie.api.api_v1.movies.crud import movie_storage
+from movie.core.config import (
     DB_USERNAME,
     UNSAVE_METHODS,
 )
-from schemas.muvies import Movies
+from movie.schemas.muvies import Movies
 
 log = logging.getLogger(__name__)
 

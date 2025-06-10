@@ -6,11 +6,11 @@ from fastapi import (
 from fastapi.params import Depends
 from starlette import status
 
-from api.api_v1.movies.crud import movie_storage
-from api.api_v1.movies.dependecies import (
+from movie.api.api_v1.movies.crud import movie_storage
+from movie.api.api_v1.movies.dependecies import (
     prefetch_movie,
 )
-from schemas.muvies import (
+from movie.schemas.muvies import (
     Movies,
     MoviesPartialUpdate,
     MoviesRead,
