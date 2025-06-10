@@ -1,9 +1,14 @@
-
-from fastapi import APIRouter, HTTPException
+from fastapi import (
+    APIRouter,
+    HTTPException,
+)
 from fastapi.params import Depends
 from starlette import status
 
-from api.api_v1.movies.crud import MovieAlreadyExistsError, movie_storage
+from api.api_v1.movies.crud import (
+    MovieAlreadyExistsError,
+    movie_storage,
+)
 from api.api_v1.movies.dependecies import (
     user_basic_or_api_token_required,
 )
