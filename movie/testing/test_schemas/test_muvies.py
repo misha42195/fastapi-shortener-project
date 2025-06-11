@@ -80,13 +80,12 @@ class CreateMoviesTestCase(TestCase):
 
 
 class CreateAFilmWithVariousAttributesTestCase(TestCase):
+
     def test_create_movie_accepts_different_values(self) -> None:
         title_list = [
             "Inception",  # валидно
             # "",  # невалидно (пустая строка)
             # "A" * 300,  # невалидно (слишком длинное название)
-            # 123,  # невалидно (не строка)
-            # None,  # невалидно (None)
         ]
         for title in title_list:
             with self.subTest(
@@ -100,7 +99,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     director="test_director",
                 )
                 movie = Movies(**movie_in.model_dump())
-                self.assertEqual(movie_in.title, movie.title)
+                self.assertEqual(title, movie.title)
 
         description_list = [
             "An epic movie.",  # валидно
@@ -121,7 +120,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     director="test_director",
                 )
                 movie = Movies(**movie_in.model_dump())
-                self.assertEqual(movie_in.description, movie.description)
+                self.assertEqual(description, movie.description)
         release_year_list = [
             date(2025, 6, 10),  # валидно
             date(1994, 10, 14),  # валидно
@@ -131,9 +130,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
             # 20250610,  # невалидно
         ]
         for release_year in release_year_list:
-            with self.subTest(
-                release_year=release_year, msg=f"title {release_year}"
-            ):  # msg=f"title {release_year}
+            with self.subTest(release_year=release_year, msg=f"title {release_year}"):
                 movie_in = CreateMovies(
                     title="test_title",
                     description="test description for this movie",
@@ -142,7 +139,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     director="test_director",
                 )
                 movie = Movies(**movie_in.model_dump())
-                self.assertEqual(movie_in.release_year, movie.release_year)
+                self.assertEqual(release_year, movie.release_year)
 
         slug_list = [
             "test-slug",  # валидно
@@ -163,7 +160,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     director="test_director",
                 )
                 movie = Movies(**movie_in.model_dump())
-                self.assertEqual(movie_in.slug, movie.slug)
+                self.assertEqual(slug, movie.slug)
 
         director_list = [
             "Christopher Nolan",  # валидно
@@ -182,4 +179,4 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     director=director,
                 )
                 movie = Movies(**movie_in.model_dump())
-                self.assertEqual(movie_in.director, movie.director)
+                self.assertEqual(director, movie.director)

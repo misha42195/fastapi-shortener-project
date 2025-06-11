@@ -1,18 +1,13 @@
 from datetime import date
 from typing import Annotated
 
-from annotated_types import Len, MaxLen
+from annotated_types import Len, MaxLen, MinLen
 from pydantic import BaseModel
 
-DescriptionString = Annotated[
-    str,
-    MaxLen(100),
-]
-
-SlugString = Annotated[
-    str,
-    Len(3, 10),
-]
+TitleString = Annotated[str, MaxLen(30)]
+DescriptionString = Annotated[str, MinLen(5), MaxLen(100)]
+SlugString = Annotated[str, Len(5, 10)]
+DirectorString = Annotated[str, Len(2, 20)]
 
 
 class MoviesBase(BaseModel):
@@ -20,7 +15,7 @@ class MoviesBase(BaseModel):
     Базовая модель
     """
 
-    title: str
+    title: TitleString
     description: DescriptionString = ""
     release_year: date
     director: str
