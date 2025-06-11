@@ -49,8 +49,19 @@ class UpdateMoviesTestCase(TestCase):
 
 
 class CreateMoviesTestCase(TestCase):
+    @classmethod
+    def create_validation_movie(cls) -> CreateMovies:
+        movie = CreateMovies(
+            title="test title",
+            description="test descript",
+            release_year=date(2025, 6, 10),
+            slug="test-slug",
+            director="test director",
+        )
+        return movie
 
     def test_create_movie_for_scheme(self) -> None:
+        """проверка полей slug и description"""
         movie_in = CreateMovies(
             title="test title",
             description="test descript",
@@ -66,3 +77,109 @@ class CreateMoviesTestCase(TestCase):
         self.assertEqual(movie_in.release_year, movie.release_year)
         self.assertEqual(movie_in.slug, movie.slug)
         self.assertEqual(movie_in.director, movie.director)
+
+
+class CreateAFilmWithVariousAttributesTestCase(TestCase):
+    def test_create_movie_accepts_different_values(self) -> None:
+        title_list = [
+            "Inception",  # валидно
+            # "",  # невалидно (пустая строка)
+            # "A" * 300,  # невалидно (слишком длинное название)
+            # 123,  # невалидно (не строка)
+            # None,  # невалидно (None)
+        ]
+        for title in title_list:
+            with self.subTest(
+                title=title, msg=f"title {title}"
+            ):  # msg=f"title {description}"
+                movie_in = CreateMovies(
+                    title=title,
+                    description="good film about life",
+                    release_year=date(2025, 5, 23),
+                    slug="test_slug",
+                    director="test_director",
+                )
+                movie = Movies(**movie_in.model_dump())
+                self.assertEqual(movie_in.title, movie.title)
+
+        description_list = [
+            "An epic movie.",  # валидно
+            "to_string",  # возможно валидно, если пустое допустимо
+            "Фильм о будущем.",  # валидно (юникод)
+            "12344",  # невалидно (не строка)
+            # None,  # зависит от схемы (может быть валидным)
+        ]
+        for description in description_list:
+            with self.subTest(
+                description=description, msg=f"title {description}"
+            ):  #  msg=f"title {description}"
+                movie_in = CreateMovies(
+                    title="test_title",
+                    description=description,
+                    release_year=date(2025, 5, 23),
+                    slug="test_slug",
+                    director="test_director",
+                )
+                movie = Movies(**movie_in.model_dump())
+                self.assertEqual(movie_in.description, movie.description)
+        release_year_list = [
+            date(2025, 6, 10),  # валидно
+            date(1994, 10, 14),  # валидно
+            # "2025-06-10",  # невалидно, если не преобразуется
+            # "not-a-date",  # невалидно
+            # None,  # невалидно
+            # 20250610,  # невалидно
+        ]
+        for release_year in release_year_list:
+            with self.subTest(
+                release_year=release_year, msg=f"title {release_year}"
+            ):  # msg=f"title {release_year}
+                movie_in = CreateMovies(
+                    title="test_title",
+                    description="test description for this movie",
+                    release_year=release_year,
+                    slug="test_slug",
+                    director="test_director",
+                )
+                movie = Movies(**movie_in.model_dump())
+                self.assertEqual(movie_in.release_year, movie.release_year)
+
+        slug_list = [
+            "test-slug",  # валидно
+            # "slug_with_underscores",  # валидно
+            # "invalid slug",  # невалидно (пробелы)
+            # "slug$",  # невалидно (спецсимволы)
+            # "",  # невалидно
+            # None,  # невалидно
+            # 123,  # невалидно
+        ]
+        for slug in slug_list:
+            with self.subTest(slug=slug, msg=f"slug {slug}"):  # msg=f"title {slug}"
+                movie_in = CreateMovies(
+                    title="test_title",
+                    description="test description for this movie",
+                    release_year=date(2025, 5, 23),
+                    slug=slug,
+                    director="test_director",
+                )
+                movie = Movies(**movie_in.model_dump())
+                self.assertEqual(movie_in.slug, movie.slug)
+
+        director_list = [
+            "Christopher Nolan",  # валидно
+            # "",  # невалидно (пусто)
+            "A",  # валидно, если нет ограничений
+            # None,  # невалидно
+            # 999,  # невалидно
+        ]
+        for director in director_list:
+            with self.subTest(director=director, msg=f"title {director}"):
+                movie_in = CreateMovies(
+                    title="test_title",
+                    description="test description for this movie",
+                    release_year=date(2025, 5, 23),
+                    slug="test_slug",
+                    director=director,
+                )
+                movie = Movies(**movie_in.model_dump())
+                self.assertEqual(movie_in.director, movie.director)
