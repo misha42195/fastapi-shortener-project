@@ -1,6 +1,10 @@
+from copy import deepcopy
 from datetime import date
 from unittest import TestCase
-from movie.schemas.muvies import (
+
+from pydantic import ValidationError
+
+from schemas.muvies import (
     CreateMovies,
     Movies,
     UpdateMovies,
@@ -9,25 +13,24 @@ from movie.schemas.muvies import (
 
 
 class MoviesPartialUpdateTestCase(TestCase):
-    def create_movie(self) -> MoviesPartialUpdate:
-        create_movie = MoviesPartialUpdate(
+    def original_movie(self) -> Movies:
+        create_movie = Movies(
             title="test_partial_title",
             description="test_partial_description",
             release_year=date(2025, 6, 10),
             director="test_patrial_director",
+            slug="test_slug",
         )
         return create_movie
 
     def test_partial_update_movie_for_scheme(self) -> None:
-        partial_movie = self.create_movie()
-        movie = Movies(
-            slug="test_partial_update",
-            **partial_movie.model_dump(exclude_unset=True),
-        )
-        self.assertEqual(partial_movie.title, movie.title)
-        self.assertEqual(partial_movie.description, movie.description)
-        self.assertEqual(partial_movie.release_year, movie.release_year)
-        self.assertEqual(partial_movie.director, movie.director)
+        original_movie = self.original_movie()
+        original_data = deepcopy(original_movie.__dict__.copy())
+
+        empty_movie = MoviesPartialUpdate()
+        for key, val in empty_movie.model_dump(exclude_unset=True).items():
+            setattr(original_movie, key, val)
+        self.assertEqual(original_movie.__dict__, original_data)
 
 
 class UpdateMoviesTestCase(TestCase):
@@ -39,7 +42,7 @@ class UpdateMoviesTestCase(TestCase):
             director="test_update_director",
         )
         movie = Movies(
-            slug="test_exclude_slug",
+            slug="test_slug",
             **update_movie.model_dump(),
         )
         self.assertEqual(update_movie.title, movie.title)
@@ -59,6 +62,33 @@ class CreateMoviesTestCase(TestCase):
             director="test director",
         )
         return movie
+
+    def test_slug_to_short(self) -> None:
+        with self.assertRaises(ValidationError) as exc_info:
+            CreateMovies(
+                title="test title",
+                description="test descript",
+                release_year=date(2025, 6, 10),
+                slug="d",
+                director="test director",
+            )
+        result = exc_info.exception.errors()[0]["type"]
+        expected_result = "string_too_short"
+        print(f"{result} == {expected_result}")
+        self.assertEqual(expected_result, result)
+
+    def test_slug_to_short_with_regex(self) -> None:
+        with self.assertRaisesRegex(
+            ValidationError,
+            expected_regex="String should have at least 3 characters",
+        ):
+            CreateMovies(
+                title="test title",
+                description="test descript",
+                release_year=date(2025, 6, 10),
+                slug="d",
+                director="test director",
+            )
 
     def test_create_movie_for_scheme(self) -> None:
         """проверка полей slug и description"""
@@ -143,9 +173,9 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
 
         slug_list = [
             "test-slug",  # валидно
-            # "slug_with_underscores",  # валидно
+            # "slug_with_underscores",  # не валидно больше 10 символов
             # "invalid slug",  # невалидно (пробелы)
-            # "slug$",  # невалидно (спецсимволы)
+            "slug$",  # невалидно (спецсимволы)
             # "",  # невалидно
             # None,  # невалидно
             # 123,  # невалидно
