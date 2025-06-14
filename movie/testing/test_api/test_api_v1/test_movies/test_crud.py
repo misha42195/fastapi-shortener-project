@@ -1,5 +1,12 @@
 import random
+from os import getenv
 from unittest import TestCase
+
+
+if getenv("TESTING") != "1":
+    raise OSError(
+        "To start the test, check the values of the variable environment (REDIS_PORT, TESTING)"
+    )
 
 
 def total(a: int, b: int) -> int:

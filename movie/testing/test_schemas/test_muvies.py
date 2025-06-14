@@ -1,5 +1,6 @@
 from copy import deepcopy
 from datetime import date
+from os import getenv
 from unittest import TestCase
 
 from pydantic import ValidationError
@@ -10,6 +11,11 @@ from schemas.muvies import (
     UpdateMovies,
     MoviesPartialUpdate,
 )
+
+if getenv("TESTING") != "1":
+    raise OSError(
+        "To start the test, check the values of the variable environment (REDIS_PORT, TESTING)"
+    )
 
 
 class MoviesPartialUpdateTestCase(TestCase):

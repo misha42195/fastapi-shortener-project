@@ -4,6 +4,7 @@ __all__ = (
 )
 import logging
 from pathlib import Path
+from os import getenv
 
 BaseDir = Path(__file__).resolve().parent  # получаем путь до папки с файлом movie.json
 
@@ -38,7 +39,7 @@ DB_USERNAME: dict[str, str] = {
 
 REDIS_HOST = "localhost"
 
-REDIS_PORT = 6379
+REDIS_PORT = int(getenv("REDIS_PORT", 0)) or 6379  # перед запуском проверим, та ли база
 
 REDIS_DB_NUM = 1
 

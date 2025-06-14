@@ -7,8 +7,8 @@ import logging
 from pydantic import BaseModel
 from redis import Redis
 
-from movie.core import config
-from movie.schemas.muvies import (
+from core import config
+from schemas.muvies import (
     CreateMovies,
     Movies,
     MoviesPartialUpdate,
