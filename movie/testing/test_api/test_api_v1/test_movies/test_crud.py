@@ -3,6 +3,7 @@ import string
 from datetime import date
 from importlib.util import source_hash
 from os import getenv
+from typing import ClassVar
 from unittest import TestCase
 
 from api.api_v1.movies import movie_storage
@@ -23,28 +24,50 @@ def total(a: int, b: int) -> int:
     return a + b
 
 
+def create_movie() -> Movies:
+    movie = CreateMovies(
+        title="test title movie",
+        description="A test movie description",
+        release_year=date(2024, 2, 10),
+        director="test director",
+        slug="".join(random.choices(string.ascii_lowercase, k=8)),
+    )
+    return movie_storage.create_movie(movie)
+
+
+class MovieStorageGetTestCase(TestCase):
+    MOVIES_COUNT = 3
+    movies_list_in_cls: ClassVar[list[Movies]] = []
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.movies_list_in_cls = [create_movie() for _ in range(cls.MOVIES_COUNT)]
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        for movie in cls.movies_list_in_cls:
+            movie_storage.delete(movie)
+
+    def test_get_movie_list(self) -> None:
+        movies_in_base = movie_storage.get_movies()  # фильмы из базы
+        movies_in_base_slug = {mv.slug for mv in movies_in_base}
+        movies_in_cls_slug = {mv.slug for mv in self.movies_list_in_cls}
+        self.assertEqual(movies_in_base_slug, movies_in_cls_slug)
+
+    def test_get_movie_by_slug(self) -> None:
+        for movie in self.movies_list_in_cls:
+            with self.subTest(movie=movie, msg=f"Validate can by slug {movie.slug!r}"):
+                movie_in_base_slug = movie_storage.get_by_slug(movie.slug)
+                self.assertEqual(movie.slug, movie_in_base_slug.slug)
+
+
 class MovieStorageUpdateTestCase(TestCase):
     def setUp(self) -> None:
-        self.test_movie = self.create_movie()
-
-    def create_movie(self) -> Movies:
-        movie = CreateMovies(
-            title="test title movie",
-            description="A test movie description",
-            release_year=date(2024, 2, 10),
-            director="test director",
-            slug="".join(random.choices(string.ascii_lowercase, k=8)),
-        )
-        return movie_storage.create_movie(movie)
+        self.test_movie = create_movie()
 
     def test_update_movie(self) -> None:
         """
-        1) создадим фильм на основе созданного фильма, который будем обновлять
-        2) зафиксируем поле title, далее изменим это поле
-        3) создадим фильм из класса UpdatedMovie(изменили его поле title)
-        4) сравним поля зафиксированного фильма с полем фильма, который поменяли
-        5) сравним фильм, со значениями который хотели изменить с измененными полями полученного фильма
-        то есть проверим значения которые хотели установить с полученным фильмом
+
         """
         movie_update = UpdateMovies(
             **self.test_movie.model_dump()
