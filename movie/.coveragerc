@@ -26,4 +26,4 @@ skip_covered = on
 skip_empty = off
 
 [html]
-directory = coverage_html_report
+directory = coverage_html
