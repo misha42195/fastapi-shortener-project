@@ -39,7 +39,9 @@ DB_USERNAME: dict[str, str] = {
 
 REDIS_HOST = "localhost"
 
-REDIS_PORT = int(getenv("REDIS_PORT", 0)) or 6379  # перед запуском проверим, та ли база
+REDIS_PORT = (
+    getenv("REDIS_PORT") if getenv("REDIS_PORT") else 6379
+)  # перед запуском проверим, та ли база
 
 REDIS_DB_NUM = 1
 
