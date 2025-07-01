@@ -1,30 +1,25 @@
 import random
 import string
 from datetime import date
-from importlib.util import source_hash
-from os import getenv
+
 from typing import ClassVar
 from unittest import TestCase
+
 
 from api.api_v1.movies import movie_storage
 from schemas.muvies import (
     CreateMovies,
-    Movies,
+    Movie,
     UpdateMovies,
     MoviesPartialUpdate,
 )
-
-if getenv("TESTING") != "1":
-    raise OSError(
-        "To start the test, check the values of the variable environment (REDIS_PORT, TESTING)"
-    )
 
 
 def total(a: int, b: int) -> int:
     return a + b
 
 
-def create_movie() -> Movies:
+def create_movie() -> Movie:
     movie = CreateMovies(
         title="test title movie",
         description="A test movie description",
@@ -37,7 +32,7 @@ def create_movie() -> Movies:
 
 class MovieStorageGetTestCase(TestCase):
     MOVIES_COUNT = 3
-    movies_list_in_cls: ClassVar[list[Movies]] = []
+    movies_list_in_cls: ClassVar[list[Movie]] = []
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -66,9 +61,7 @@ class MovieStorageUpdateTestCase(TestCase):
         self.test_movie = create_movie()
 
     def test_update_movie(self) -> None:
-        """
-
-        """
+        """ """
         movie_update = UpdateMovies(
             **self.test_movie.model_dump()
         )  # фильм для обновления, начальное состояние

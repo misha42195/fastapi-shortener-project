@@ -1,26 +1,39 @@
+import random
+import string
 from copy import deepcopy
 from datetime import date
-from os import getenv
+from typing import Any, Generator
 from unittest import TestCase
 
+import pytest
 from pydantic import ValidationError
 
+from api.api_v1.movies import movie_storage, MovieAlreadyExistsError
 from schemas.muvies import (
     CreateMovies,
-    Movies,
+    Movie,
     UpdateMovies,
     MoviesPartialUpdate,
 )
 
-if getenv("TESTING") != "1":
-    raise OSError(
-        "To start the test, check the values of the variable environment (REDIS_PORT, TESTING)"
+
+@pytest.fixture()
+def movie() -> Generator[Any, Any, None]:
+    movie_in = CreateMovies(
+        title="test title",
+        description="test description",
+        release_year=date(2025, 5, 23),
+        director="test director",
+        slug="".join(random.choices(string.ascii_lowercase, k=8)),
     )
+    movie = movie_storage.create_movie(movie_in)
+    yield movie
+    movie_storage.delete(movie)
 
 
 class MoviesPartialUpdateTestCase(TestCase):
-    def original_movie(self) -> Movies:
-        create_movie = Movies(
+    def original_movie(self) -> Movie:
+        create_movie = Movie(
             title="test_partial_title",
             description="test_partial_description",
             release_year=date(2025, 6, 10),
@@ -47,7 +60,7 @@ class UpdateMoviesTestCase(TestCase):
             release_year=date(2025, 6, 10),
             director="test_update_director",
         )
-        movie = Movies(
+        movie = Movie(
             slug="test_slug",
             **update_movie.model_dump(),
         )
@@ -105,7 +118,7 @@ class CreateMoviesTestCase(TestCase):
             slug="test-slug",
             director="test director",
         )
-        movie = Movies(
+        movie = Movie(
             **movie_in.model_dump(),
         )
         self.assertEqual(movie_in.title, movie.title)
@@ -120,8 +133,8 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
     def test_create_movie_accepts_different_values(self) -> None:
         title_list = [
             "Inception",  # валидно
-            # "",  # невалидно (пустая строка)
-            # "A" * 300,  # невалидно (слишком длинное название)
+            # "", # невалидно (пустая строка)
+            # "A" * 300, # невалидно (слишком длинное название)
         ]
         for title in title_list:
             with self.subTest(
@@ -134,7 +147,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     slug="test_slug",
                     director="test_director",
                 )
-                movie = Movies(**movie_in.model_dump())
+                movie = Movie(**movie_in.model_dump())
                 self.assertEqual(title, movie.title)
 
         description_list = [
@@ -142,7 +155,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
             "to_string",  # возможно валидно, если пустое допустимо
             "Фильм о будущем.",  # валидно (юникод)
             "12344",  # невалидно (не строка)
-            # None,  # зависит от схемы (может быть валидным)
+            # None, # зависит от схемы (может быть валидным)
         ]
         for description in description_list:
             with self.subTest(
@@ -155,7 +168,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     slug="test_slug",
                     director="test_director",
                 )
-                movie = Movies(**movie_in.model_dump())
+                movie = Movie(**movie_in.model_dump())
                 self.assertEqual(description, movie.description)
         release_year_list = [
             date(2025, 6, 10),  # валидно
@@ -174,7 +187,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     slug="test_slug",
                     director="test_director",
                 )
-                movie = Movies(**movie_in.model_dump())
+                movie = Movie(**movie_in.model_dump())
                 self.assertEqual(release_year, movie.release_year)
 
         slug_list = [
@@ -195,7 +208,7 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     slug=slug,
                     director="test_director",
                 )
-                movie = Movies(**movie_in.model_dump())
+                movie = Movie(**movie_in.model_dump())
                 self.assertEqual(slug, movie.slug)
 
         director_list = [
@@ -214,5 +227,12 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
                     slug="test_slug",
                     director=director,
                 )
-                movie = Movies(**movie_in.model_dump())
+                movie = Movie(**movie_in.model_dump())
                 self.assertEqual(director, movie.director)
+
+
+def test_create_or_raise_already_exists(movie: Movie) -> None:
+    create_movie = CreateMovies(**movie.model_dump())
+    with pytest.raises(MovieAlreadyExistsError, match=movie.slug) as ext:
+        movie_storage.create_raise_already_exists(create_movie)
+        assert ext.value.args[0] == movie.slug
