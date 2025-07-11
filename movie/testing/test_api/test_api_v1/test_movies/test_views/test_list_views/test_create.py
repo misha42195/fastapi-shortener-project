@@ -6,7 +6,7 @@ from starlette import status
 from starlette.testclient import TestClient
 
 from main import app
-from schemas.muvies import CreateMovies
+from schemas.muvies import CreateMovies, Movie
 
 
 def test_create_movie(auth_client: TestClient) -> None:
@@ -28,4 +28,22 @@ def test_create_movie(auth_client: TestClient) -> None:
     assert data["director"] == response_data["director"], response.text
     assert data["slug"] == response_data["slug"], response.text
 
-""
+
+def test_create_movie_already_exists(
+    auth_client: TestClient,
+    movie: Movie,
+) -> None:
+    url = app.url_path_for("create_movie")
+    data = CreateMovies.model_dump(
+        movie,
+        mode="json",
+    )
+    response = auth_client.post(
+        url=url,
+        json=data,
+    )
+    print(response.json()["detail"])
+    assert response.status_code == status.HTTP_409_CONFLICT, response.text
+    assert (
+        f"Movie with slug='{movie.slug}' already exists." == response.json()["detail"]
+    )
