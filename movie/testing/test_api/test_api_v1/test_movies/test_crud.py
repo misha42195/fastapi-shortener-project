@@ -5,6 +5,7 @@ from datetime import date
 from typing import ClassVar
 from unittest import TestCase
 
+import pytest
 
 from api.api_v1.movies import movie_storage
 from schemas.muvies import (
@@ -19,15 +20,16 @@ def total(a: int, b: int) -> int:
     return a + b
 
 
-def create_movie() -> Movie:
-    movie = CreateMovies(
+@pytest.fixture(scope="module")
+def movie() -> Movie:
+    mov = CreateMovies(
         title="test title movie",
         description="A test movie description",
         release_year=date(2024, 2, 10),
         director="test director",
         slug="".join(random.choices(string.ascii_lowercase, k=8)),
     )
-    return movie_storage.create_movie(movie)
+    return movie_storage.create_movie(mov)
 
 
 class MovieStorageGetTestCase(TestCase):
@@ -36,7 +38,7 @@ class MovieStorageGetTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.movies_list_in_cls = [create_movie() for _ in range(cls.MOVIES_COUNT)]
+        cls.movies_list_in_cls = [movie() for _ in range(cls.MOVIES_COUNT)]
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -58,7 +60,7 @@ class MovieStorageGetTestCase(TestCase):
 
 class MovieStorageUpdateTestCase(TestCase):
     def setUp(self) -> None:
-        self.test_movie = create_movie()
+        self.test_movie = movie()
 
     def test_update_movie(self) -> None:
         """ """
