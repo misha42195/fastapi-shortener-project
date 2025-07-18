@@ -9,16 +9,19 @@ import pytest
 from _pytest.fixtures import SubRequest
 
 from api.api_v1.movies import movie_storage
-from schemas.muvies import Movie, CreateMovies
+from schemas.muvies import Movies, CreateMovies
 
 if getenv("TESTING") != "1":
     pytest.exit("The environment is not ready for tests")
 
 
-def build_movie_create(slug: str) -> CreateMovies:
+def build_movie_create(
+    slug: str,
+    description: str = "test description",
+) -> CreateMovies:
     movie_create = CreateMovies(
         title="test title",
-        description="test description",
+        description=description,
         release_year=date(2025, 10, 1),
         director="test director",
         slug=slug,
@@ -26,20 +29,30 @@ def build_movie_create(slug: str) -> CreateMovies:
     return movie_create
 
 
-def build_movie_create_random_slug() -> CreateMovies:
+def build_movie_create_random_slug(
+    description: str = "test description",
+) -> CreateMovies:
     slug = "".join(random.choices(string.ascii_lowercase, k=8))
-    movie_create = build_movie_create(slug)
+    movie_create = build_movie_create(slug, description=description)
     return movie_create
 
 
-def create_movie(slug: str) -> Movie:
-    movie_in = build_movie_create(slug=slug)
+def create_movie(
+    slug: str,
+    description: str,
+) -> Movies:
+    movie_in = build_movie_create(
+        slug=slug,
+        description=description,
+    )
     movie_create = movie_storage.create_movie(movie_in)
     return movie_create
 
 
-def create_movie_random_slug() -> Movie:
-    movie_in = build_movie_create_random_slug()
+def create_movie_random_slug(
+    description: str = "test description",
+) -> Movies:
+    movie_in = build_movie_create_random_slug(description)
     movie_create = movie_storage.create_movie(movie_in)
     return movie_create
 
@@ -53,7 +66,7 @@ def create_movie_random_slug() -> Movie:
         pytest.param("max-som-ts", id="max slug"),  # максимально допустимый
     ],
 )
-def movie(request: SubRequest) -> Generator[CreateMovies, None, None]:
+def movie(request: SubRequest) -> Generator[CreateMovies]:
     movie_create = build_movie_create(slug=request.param)
     yield movie_create
     movie_storage.delete(movie_create)
