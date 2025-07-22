@@ -11,16 +11,23 @@ from _pytest.fixtures import SubRequest
 from api.api_v1.movies import movie_storage
 from schemas.muvies import Movies, CreateMovies
 
-if getenv("TESTING") != "1":
-    pytest.exit("The environment is not ready for tests")
+
+@pytest.fixture(
+    scope="session",
+    autouse=True,
+)
+def check_testing_env() -> None:
+    if getenv("TESTING") != "1":
+        pytest.exit("The environment is not ready for tests")
 
 
 def build_movie_create(
     slug: str,
+    title: str = "test title",
     description: str = "test description",
 ) -> CreateMovies:
     movie_create = CreateMovies(
-        title="test title",
+        title=title,
         description=description,
         release_year=date(2025, 10, 1),
         director="test director",
@@ -31,19 +38,26 @@ def build_movie_create(
 
 def build_movie_create_random_slug(
     description: str = "test description",
+    title: str = "test title",
 ) -> CreateMovies:
     slug = "".join(random.choices(string.ascii_lowercase, k=8))
-    movie_create = build_movie_create(slug, description=description)
+    movie_create = build_movie_create(
+        slug,
+        description=description,
+        title=title,
+    )
     return movie_create
 
 
 def create_movie(
     slug: str,
     description: str,
+    title: str,
 ) -> Movies:
     movie_in = build_movie_create(
         slug=slug,
         description=description,
+        title=title,
     )
     movie_create = movie_storage.create_movie(movie_in)
     return movie_create
@@ -51,8 +65,12 @@ def create_movie(
 
 def create_movie_random_slug(
     description: str = "test description",
+    title: str = "test title",
 ) -> Movies:
-    movie_in = build_movie_create_random_slug(description)
+    movie_in = build_movie_create_random_slug(
+        description=description,
+        title=title,
+    )
     movie_create = movie_storage.create_movie(movie_in)
     return movie_create
 
