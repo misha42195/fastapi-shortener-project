@@ -6,19 +6,24 @@ from fastapi import (
 from fastapi.params import Depends
 from starlette import status
 
-from movie.api.api_v1.movies.crud import movie_storage
-from movie.api.api_v1.movies.dependecies import (
+from api.api_v1.movies.crud import movie_storage
+from api.api_v1.movies.dependecies import (
     prefetch_movie,
 )
-from movie.schemas.muvies import (
+from schemas.muvies import (
     Movies,
     MoviesPartialUpdate,
     MoviesRead,
     UpdateMovies,
 )
 
+
+MovieBySlug = Annotated[
+    Movies,
+    Depends(prefetch_movie),
+]
 router = APIRouter(
-    prefix="/slug",
+    prefix="/{slug}",
     tags=["Movies"],
     responses={
         status.HTTP_404_NOT_FOUND: {
@@ -33,11 +38,6 @@ router = APIRouter(
         },
     },
 )
-
-MovieBySlug = Annotated[
-    Movies,
-    Depends(prefetch_movie),
-]
 
 
 @router.get(
@@ -90,3 +90,11 @@ def delete_movie(
     # _=Depends(required_api_token),
 ) -> None:
     movie_storage.delete(movie)
+
+
+@router.post(
+    "/transfer_movie/",
+)
+def transfer_movie() -> dict[str, str]:
+    # raise NotImplementedError
+    return {"status": "200"}

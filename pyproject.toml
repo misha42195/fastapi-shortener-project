@@ -16,8 +16,23 @@ dev = [
     "httpx>=0.28.1",
     "mypy>=1.16.0",
     "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
     "ruff>=0.11.13",
 ]
+
+#pytest settings
+[tool.pytest.ini_options]
+minversion = "8.4"
+addopts = "-ra --strict-markers"
+console_output_style = "progress"
+markers = [
+    "apitest: mark test as API test",
+
+]
+xfail_strict = true
+#console_output_style = "count"
+log_cli = false
+log_cli_level = "INFO"
 
 # settings mypy
 [tool.mypy]
