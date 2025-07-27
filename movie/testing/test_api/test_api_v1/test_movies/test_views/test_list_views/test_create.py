@@ -1,23 +1,28 @@
-import random
-import string
-from datetime import date
+import logging
 from typing import Any
 
+import httpx
 import pytest
 from _pytest.fixtures import SubRequest
-from pydantic import ValidationError
+from _pytest.logging import LogCaptureFixture
 from starlette import status
 from starlette.testclient import TestClient
 
 from main import app
-from schemas.muvies import CreateMovies, Movie
+from schemas.muvies import CreateMovies, Movies
 from testing.conftest import build_movie_create_random_slug
 
 
-def test_create_movie(auth_client: TestClient) -> None:
+@pytest.mark.apitest
+def test_create_movie(
+    auth_client: TestClient,
+    caplog: LogCaptureFixture,
+) -> None:
+    caplog.set_level(logging.INFO)
+
     url = app.url_path_for("create_movie")
     data: dict[str, str] = build_movie_create_random_slug().model_dump(mode="json")
-    response = auth_client.post(url=url, json=data)
+    response: httpx.Response = auth_client.post(url=url, json=data)
     response_data = response.json()
 
     assert response.status_code == status.HTTP_201_CREATED, response.text
@@ -27,10 +32,14 @@ def test_create_movie(auth_client: TestClient) -> None:
     assert data["director"] == response_data["director"], response.text
     assert data["slug"] == response_data["slug"], response.text
 
+    assert "Создание нового фильма" in caplog.text
+    assert data["slug"] in caplog.text
 
+
+@pytest.mark.apitest
 def test_create_movie_already_exists(
     auth_client: TestClient,
-    movie: Movie,
+    movie: Movies,
 ) -> None:
     url = app.url_path_for("create_movie")
     data = CreateMovies.model_dump(
@@ -47,16 +56,21 @@ def test_create_movie_already_exists(
     )
 
 
+@pytest.mark.apitest
 class TestCreateInvalid:
 
     @pytest.fixture(
         params=[
             pytest.param(
-                ("ab", "too short slug"),
+                ("ab", "string_too_short", "String should have at least 3 characters"),
                 id="short slug",
             ),
             pytest.param(
-                ("to-long-slug", "too long slug"),
+                (
+                    "to-long-slug",
+                    "string_too_long",
+                    "String should have at most 10 characters",
+                ),
                 id="long slug",
             ),
         ]
@@ -64,15 +78,15 @@ class TestCreateInvalid:
     def movie_create_values(
         self,
         request: SubRequest,
-    ) -> tuple[dict[str, Any], str]:
+    ) -> tuple[dict[str, Any], str, str]:
         build = build_movie_create_random_slug()
         data = build.model_dump(mode="json")
-        slug, ext_type = request.param
-        print(slug, ext_type)
+        slug, ext_type, expected_msg = request.param
         data["slug"] = slug
         return (
             data,
             ext_type,
+            expected_msg,
         )
 
     def test_invalid_slug(
@@ -81,10 +95,11 @@ class TestCreateInvalid:
         auth_client,
     ) -> None:
         url = app.url_path_for("create_movie")
-        create_data, ext_error_type = movie_create_values
+        create_data, expected_type, expected_msg = movie_create_values
         response = auth_client.post(url=url, json=create_data)
         assert (
             response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         ), response.text
-        expected_error_detail = response.json()["detail"][0]
-        assert expected_error_detail == ext_error_type
+        error = response.json()["detail"][0]
+        assert error["type"] == expected_type
+        assert error["msg"] == expected_msg
