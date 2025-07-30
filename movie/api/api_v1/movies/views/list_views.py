@@ -50,6 +50,7 @@ def movies() -> list[Movies]:
 @router.post(
     "/",
     response_model=MoviesRead,
+    status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_409_CONFLICT: {
             "description": "Such an object already exists",
@@ -65,7 +66,7 @@ def movies() -> list[Movies]:
 )
 def create_movie(
     movie_in: CreateMovies,
-) -> HTTPException:
+) -> MoviesRead:
 
     try:
         return movie_storage.create_raise_already_exists(movie_in)
