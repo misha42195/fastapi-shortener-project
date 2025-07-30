@@ -7,4 +7,5 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   name: My first step in GH Actions
-                run: echo "Hello action!"
+                # получаем имя события из переменной и выведется имя события (при push)
+                run: echo "Hello action on ${{ github.event_name }}"
