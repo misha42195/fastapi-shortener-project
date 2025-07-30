@@ -1,7 +1,3 @@
-__all__ = (
-    "movie_storage",
-    "MovieAlreadyExistsError",
-)
 import logging
 
 from pydantic import BaseModel
@@ -73,7 +69,6 @@ class MoviesStorage(BaseModel):
 
     def get_by_slug(self, slug: str) -> Movies | None:
         log.info("получение фильма: %s", slug)
-
         movie_json = redis_movies.hget(
             name=config.REDIS_MOVIES_SET_NAME,
             key=slug,
