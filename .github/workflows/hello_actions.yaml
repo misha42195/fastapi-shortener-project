@@ -13,4 +13,4 @@ jobs:
                 run: echo "Hello actin in ${{ github.repository }} ref- ${{ github.ref }}"
 
             -   name: This GH Actions runnin on ${{ runner.os }}
-                run: echo "Action job status ${{ job.status }}"
+                run: echo "Action job status ${{ job.status }} "
