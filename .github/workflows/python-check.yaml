@@ -1,0 +1,12 @@
+name: Python check 🐍
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    linter:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Placeholder GH Actions step
+                run: echo "Hello action"
