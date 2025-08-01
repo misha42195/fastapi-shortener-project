@@ -2,7 +2,6 @@
 
 # Develop
 
-Setup:
 
 Right click `url-shortener` -> Mark directory as -> Sources Root
 
@@ -11,7 +10,7 @@ Right click `url-shortener` -> Mark directory as -> Sources Root
 ```shell
 uv add sync
 ```
-
+Check GH Actions after any push.
 ### Install all packages
 
 ### Run dev server:
