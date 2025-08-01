@@ -12,5 +12,5 @@ jobs:
 
             -   name: Second GH Action by ${{github.actor}}
                 run: echo "Hello action on ${{github.repository}} ref:: ${{github.ref}}"
-            - name: This GH Action rannin is on ${{runner.os}}
-              run: Action job status ${{job.status}}
+            -   name: This GH Action rannin is on ${{runner.os}}
+                run: echo "Action job status ${{job.status}}"
