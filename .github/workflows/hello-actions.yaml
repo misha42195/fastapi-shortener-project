@@ -7,5 +7,5 @@ jobs:
     Hello-world:
         runs-on: ubuntu-latest
         steps:
-            - name: My first step in GH Actions
-              run: echo "Hello action!"
+            -   name: My first step in GH Action
+                run: echo "Hello actions!"
