@@ -1,19 +1,19 @@
 name: Python GH Actions check 🐍
 
 on:
-    push:
-        branches:
-            - master
-    pull_request:
-        branches:
-            - master
-        paths:
-            - "movie/**"
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "movie/**"
 
 
 jobs:
-    lint:
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Placeholder GH Action step
-                run: echo "Run check fastapi-movie"
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder GH Action step
+        run: echo "Run check fastapi-movie"
