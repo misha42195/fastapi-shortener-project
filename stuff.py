@@ -17,3 +17,5 @@ if __name__ == "__main__":
     print("foo", redis.get("foo"))
     print("spam", redis.get("spam"))
     print("spam", redis.get("spam"))
+    print("spam", redis.get("spam"))
+    print("spam", redis.get("spam"))
