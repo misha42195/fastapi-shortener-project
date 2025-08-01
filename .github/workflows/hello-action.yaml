@@ -1,4 +1,11 @@
-name: hello-action.yaml
+name: Hello GH Actions 🌍
+
 on:
+    push:
 
 jobs:
+    Hello-world:
+        runs-on: ubuntu-latest
+        steps:
+            - name: My first step in GitHub Actions
+              run: echo "Hello action on ${{github.event_name}}!"
