@@ -1,11 +1,10 @@
 name: Hello GH Actions 🌍
 
-on:
-    push:
+on: push
 
 jobs:
-  Hello-world:
-    runs-on: ubuntu-latest  # Отступ: 2 пробела от `jobs`
+  hello-world-job:
+    runs-on: ubuntu-latest
     steps:
-      - name: My first step
-        run: echo "Hello action!"  # Отступ: 4 пробела от `steps`
+      - name: Say hello
+        run: echo "Hello from GitHub Actions!"
