@@ -22,3 +22,7 @@ repos:
         args:
           - --fix
           # - --unsafe-fixes
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.27.0
+    hooks:
+      - id: check-github-actions
