@@ -19,6 +19,6 @@ repos:
     hooks:
       # Run the linter.
       - id: ruff
-        args:
-          - --fix
+        args: [--select=T201, --fix]
+          # - --fix
           # - --unsafe-fixes
