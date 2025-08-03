@@ -1,8 +1,9 @@
+name: Hello GH Actions
 on:
     push:
 
 jobs:
-        runs-on: ubuntu-latest
-        steps:
-            -   name: My first step in GH Actions
-                run: echo "Hello action!"
+    runs-on: ubuntu-latest
+    steps:
+        -   name: My first step in GH Actions
+            run: echo "Hello action!"
