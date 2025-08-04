@@ -14,7 +14,6 @@ if __name__ == "__main__":
     redis.set("name", "Misha")
     redis.set("age", 36)
     redis.set("foo", "bar")
-    1 + ""
     print("foo", redis.get("foo"))
     print("spam", redis.get("spam"))
     print("spam", redis.get("spam"))
