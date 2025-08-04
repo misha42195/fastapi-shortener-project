@@ -1,8 +1,6 @@
-from email.policy import strict
-
 import pytest
-from fastapi.testclient import TestClient
 from fastapi import status
+from fastapi.testclient import TestClient
 
 from main import app
 
