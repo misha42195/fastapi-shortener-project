@@ -1,14 +1,13 @@
-import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
 from api.api_v1.movies import movie_storage
 from main import app
-from schemas.muvies import Movie
+from schemas.muvies import Movies
 
 
 def test_delete(
-    movie: Movie,
+    movie: Movies,
     auth_client: TestClient,
 ) -> None:
     url = app.url_path_for("delete_movie", slug=movie.slug)

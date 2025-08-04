@@ -21,7 +21,7 @@ def auth_token() -> Generator[str]:
 
 
 @pytest.fixture(scope="module")
-def auth_client(auth_token) -> Generator[TestClient]:
+def auth_client(auth_token: str) -> Generator[TestClient, None, None]:
     headers = {"Authorization": f"Bearer {auth_token}"}
     with TestClient(app) as client:
         client.headers.update(headers=headers)

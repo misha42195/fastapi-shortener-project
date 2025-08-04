@@ -12,7 +12,7 @@ class RedisToken(AbstractRedisToken):
     def __init__(
         self,
         host: str,
-        port: int,
+        port: str | int | None,
         db: int,
         set_token: str,
     ) -> None:

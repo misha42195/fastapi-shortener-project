@@ -3,8 +3,8 @@ __all__ = (
     "UNSAVE_METHODS",
 )
 import logging
-from pathlib import Path
 from os import getenv
+from pathlib import Path
 
 BaseDir = Path(__file__).resolve().parent  # получаем путь до папки с файлом movie.json
 
@@ -25,10 +25,6 @@ UNSAVE_METHODS = frozenset(
         "DELETE",
     }
 )
-# tokens for testing
-# 1) "idV8XTAfbS2JOh7690mHlA"
-# 2) "bsXxwPUJ6jo26PAK3mPG9g"
-# 3) "HKieZrytophWYQWVlQ3Z2g"
 
 
 DB_USERNAME: dict[str, str] = {
@@ -39,9 +35,7 @@ DB_USERNAME: dict[str, str] = {
 
 REDIS_HOST = "localhost"
 
-REDIS_PORT = (
-    getenv("REDIS_PORT") if getenv("REDIS_PORT") else 6379
-)  # перед запуском проверим, та ли база
+REDIS_PORT = getenv("REDIS_PORT") if getenv("REDIS_PORT") else 6379
 
 REDIS_DB_NUM = 1
 

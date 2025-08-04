@@ -17,7 +17,6 @@ from schemas.muvies import (
     UpdateMovies,
 )
 
-
 MovieBySlug = Annotated[
     Movies,
     Depends(prefetch_movie),

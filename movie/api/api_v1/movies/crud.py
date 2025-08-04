@@ -92,7 +92,7 @@ class MoviesStorage(BaseModel):
     def create_raise_already_exists(
         self,
         movie_in: CreateMovies,
-    ) -> Movies | MovieAlreadyExistsError:
+    ) -> Movies:
         if not self.exists(movie_in.slug):
             return movie_storage.create_movie(movie_in)
         raise MovieAlreadyExistsError(movie_in.slug)
@@ -107,7 +107,7 @@ class MoviesStorage(BaseModel):
         )
         log.info("Удаление фильма")
 
-    def delete(self, movie: Movies) -> None:
+    def delete(self, movie: Movies | CreateMovies) -> None:
         self.delete_by_slug(slug=movie.slug)
         log.info("Удаление фильма")
 

@@ -7,8 +7,8 @@ from starlette.testclient import TestClient
 
 from api.api_v1.movies import movie_storage
 from main import app
-from schemas.muvies import Movies, DescriptionString, DESCRIPTION_MAX_LENGTH
-from testing.conftest import create_movie, create_movie_random_slug
+from schemas.muvies import DESCRIPTION_MAX_LENGTH, DescriptionString, Movies
+from testing.conftest import create_movie_random_slug
 
 
 class TestUpdatePartial:
@@ -62,4 +62,4 @@ class TestUpdatePartial:
         response = auth_client.patch(url=url, json={"description": new_description})
         assert response.status_code == status.HTTP_200_OK, response.text
         movie_in_db = movie_storage.get_by_slug(movie.slug)
-        assert movie_in_db.description == new_description, response.text
+        assert movie_in_db.description == new_description, response.text  # type: ignore

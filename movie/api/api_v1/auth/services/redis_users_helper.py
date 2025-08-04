@@ -10,7 +10,7 @@ class RedisUsersHelper(AbstractUsersHelper):
     def __init__(
         self,
         host: str,
-        port: int,
+        port: str | int | None,
         db_num: int,
         set_name: str,
     ) -> None:
