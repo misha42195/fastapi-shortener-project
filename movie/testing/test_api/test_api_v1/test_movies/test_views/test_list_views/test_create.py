@@ -91,8 +91,8 @@ class TestCreateInvalid:
 
     def test_invalid_slug(
         self,
-        movie_create_values,
-        auth_client,
+        movie_create_values: CreateMovies,
+        auth_client: TestClient,
     ) -> None:
         url = app.url_path_for("create_movie")
         create_data, expected_type, expected_msg = movie_create_values
