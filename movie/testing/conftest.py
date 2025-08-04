@@ -3,13 +3,12 @@ import string
 from collections.abc import Generator
 from datetime import date
 from os import getenv
-from typing import Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
 
 from api.api_v1.movies import movie_storage
-from schemas.muvies import Movies, CreateMovies
+from schemas.muvies import CreateMovies, Movies
 
 
 @pytest.fixture(
