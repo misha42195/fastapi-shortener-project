@@ -41,4 +41,4 @@ jobs:
         - name: Install the project
           run: uv sync --locked --all-extras --dev
         - name: List dependencies
-          run: echo uv tree
+          run: uv tree
