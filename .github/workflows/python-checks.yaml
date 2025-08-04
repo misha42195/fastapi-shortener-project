@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - add-mypy-to-action
+      - add-mypy-to-actions
   pull_request:
     branches:
       - master
