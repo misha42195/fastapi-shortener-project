@@ -21,6 +21,10 @@ dev = [
     "ruff>=0.11.13",
 ]
 
+# uv settiongs
+[tool.uv]
+required-version = "~=0.8.4"
+
 #pytest settings
 [tool.pytest.ini_options]
 minversion = "8.4"
@@ -28,7 +32,6 @@ addopts = "-ra --strict-markers"
 console_output_style = "progress"
 markers = [
     "apitest: mark test as API test",
-
 ]
 xfail_strict = true
 #console_output_style = "count"
