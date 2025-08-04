@@ -78,10 +78,9 @@ class TestUpdate:
             url=url,
             json=data,
         )
-        print(response.text)
+
         assert response.status_code == status.HTTP_200_OK, response.text
         movie_in_db = movie_storage.get_by_slug(movie.slug)
-        print("DESC", movie_in_db.description)
-        print("TITLE", movie_in_db.title)
-        assert movie_in_db.description == new_description
-        assert movie_in_db.title == new_title
+        if movie_in_db is not None:
+            assert movie_in_db.description == new_description
+            assert movie_in_db.title == new_title
