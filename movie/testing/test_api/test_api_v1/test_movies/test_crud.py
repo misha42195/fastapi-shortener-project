@@ -1,7 +1,6 @@
 import random
 import string
 from datetime import date
-
 from typing import ClassVar
 from unittest import TestCase
 
@@ -10,9 +9,9 @@ import pytest
 from api.api_v1.movies import movie_storage
 from schemas.muvies import (
     CreateMovies,
-    Movie,
-    UpdateMovies,
+    Movies,
     MoviesPartialUpdate,
+    UpdateMovies,
 )
 
 
@@ -21,7 +20,7 @@ def total(a: int, b: int) -> int:
 
 
 @pytest.fixture(scope="module")
-def movie() -> Movie:
+def movie() -> Movies:
     mov = CreateMovies(
         title="test title movie",
         description="A test movie description",
@@ -34,7 +33,7 @@ def movie() -> Movie:
 
 class MovieStorageGetTestCase(TestCase):
     MOVIES_COUNT = 3
-    movies_list_in_cls: ClassVar[list[Movie]] = []
+    movies_list_in_cls: ClassVar[list[Movies]] = []
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -46,15 +45,28 @@ class MovieStorageGetTestCase(TestCase):
             movie_storage.delete(movie)
 
     def test_get_movie_list(self) -> None:
-        movies_in_base = movie_storage.get_movies()  # фильмы из базы
+        movies_in_base = movie_storage.get_movies()
         movies_in_base_slug = {mv.slug for mv in movies_in_base}
         movies_in_cls_slug = {mv.slug for mv in self.movies_list_in_cls}
         self.assertEqual(movies_in_base_slug, movies_in_cls_slug)
 
     def test_get_movie_by_slug(self) -> None:
         for movie in self.movies_list_in_cls:
+            # 1. Проверка на None должна быть ДО обращения к атрибутам
+            assert (
+                movie is not None
+            ), "Movie object in movies_list_in_cls cannot be None"
+
             with self.subTest(movie=movie, msg=f"Validate can by slug {movie.slug!r}"):
+                # 2. Получаем фильм по slug
                 movie_in_base_slug = movie_storage.get_by_slug(movie.slug)
+
+                # 3. Проверяем, что фильм найден в хранилище
+                assert (
+                    movie_in_base_slug is not None
+                ), f"Movie with slug {movie.slug!r} not found in storage"
+
+                # 4. Теперь оба объекта гарантированно не None
                 self.assertEqual(movie.slug, movie_in_base_slug.slug)
 
 
@@ -63,31 +75,22 @@ class MovieStorageUpdateTestCase(TestCase):
         self.test_movie = movie()
 
     def test_update_movie(self) -> None:
-        """ """
-        movie_update = UpdateMovies(
-            **self.test_movie.model_dump()
-        )  # фильм для обновления, начальное состояние
-        source_movie = movie_update.title  # фиксируем начальное состояние поля title
-        movie_update.title += "a new string"  # вносим изменения в фильм, далее его поля используем для изменения
+        movie_update = UpdateMovies(**self.test_movie.model_dump())
+        source_movie = movie_update.title
+        movie_update.title += "a new string"
 
-        updated_movie = movie_storage.update_movie(  # обновляем фильм используя значения измененного фильма
+        updated_movie = movie_storage.update_movie(
             movie=self.test_movie,
             movie_data_in=movie_update,
         )
-        self.assertNotEqual(
-            source_movie, updated_movie.title
-        )  # сравним старое значение поля title и измененного
-        self.assertEqual(
-            movie_update, UpdateMovies(**updated_movie.model_dump())
-        )  # одинаковые ли объекты фильмы
-        # обновленный фильм и поля которые
+        self.assertNotEqual(source_movie, updated_movie.title)
+        self.assertEqual(movie_update, UpdateMovies(**updated_movie.model_dump()))
 
     def test_update_partial_movie(self) -> None:
-        """тест на частичное обновление данных"""
         partial_movie_update = MoviesPartialUpdate(
             description=self.test_movie.description + "(descript)"
         )
-        source_description = self.test_movie.description  # фиксируем значение
+        source_description = self.test_movie.description
         updated_movie_partial = movie_storage.movie_partial_update(
             self.test_movie,
             partial_movie_update,

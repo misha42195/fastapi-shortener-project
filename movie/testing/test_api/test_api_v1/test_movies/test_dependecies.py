@@ -1,4 +1,4 @@
-from api.api_v1.movies.dependecies import UNSAVE_METHODS
+from core.config import UNSAVE_METHODS
 
 
 class TestUnsaveMethod:
