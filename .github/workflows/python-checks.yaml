@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - add-mypy-to-actions
   pull_request:
     branches:
       - master
@@ -34,11 +33,7 @@ jobs:
       steps:
         - uses: actions/checkout@v4
         - uses: actions/setup-python@v5
-        - name: Setup uv
-          uses: astral-sh/setup-uv@v6
-          with:
-            pyproject-file: 'pyproject.toml'
-            enable-cache: true
+
         - name: Install the project
           run: uv sync --locked --all-extras --dev
         - name: Run mypy
