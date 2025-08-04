@@ -1,41 +1,45 @@
 name: Python GH Actions check 🐍
 
 on:
-  push:
-    branches:
-      - master
-      - feature/add-mypy-to-actions
-  pull_request:
-    branches:
-      - master
-    paths:
-      - ".github/workflows/**"
-      - "movie/**"
+    push:
+        branches:
+            - master
+            - feature/add-mypy-to-actions
+    pull_request:
+        branches:
+            - master
+        paths:
+            - ".github/workflows/**"
+            - "movie/**"
 
 
 jobs:
-  run-black:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    run-black:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version-file: '.python-version'
+            -   uses: actions/setup-python@v5
+                with:
+                    python-version-file: '.python-version'
 
-      - name: Install Black
-        run: |
-          python -m pip install --upgrade pip
-          pip install "black == 25.1.0"
-      - name: Black ⬛
-        run: black --check --diff ./
-  run-mypy:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-python@v5
-
-        - name: Install the project
-          run: uv sync --locked --all-extras --dev
-        - name: Run mypy
-          run: mypy movie
+            -   name: Install Black
+                run: |
+                    python -m pip install --upgrade pip
+                    pip install "black == 25.1.0"
+            -   name: Black ⬛
+                run: black --check --diff ./
+    run-mypy:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   uses: actions/setup-python@v5
+            -   name: Setup uv
+            -   uses: astral-sh/setup-uv@v5
+                with:
+                    pyproject-file: "pyproject.toml"
+                    enable-cache: 'auto'
+            -   name: Install the project
+                run: uv sync --locked --all-extras --dev
+            -   name: Run mypy
+                run: mypy movie
