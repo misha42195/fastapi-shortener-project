@@ -19,7 +19,6 @@ def total(a: int, b: int) -> int:
     return a + b
 
 
-@pytest.fixture(scope="module")
 def movie() -> Movies:
     mov = CreateMovies(
         title="test title movie",
@@ -45,7 +44,7 @@ class MovieStorageGetTestCase(TestCase):
             movie_storage.delete(movie)
 
     def test_get_movie_list(self) -> None:
-        movies_in_base = movie_storage.get_movies()
+        movies_in_base = self.movies_list_in_cls
         movies_in_base_slug = {mv.slug for mv in movies_in_base}
         movies_in_cls_slug = {mv.slug for mv in self.movies_list_in_cls}
         self.assertEqual(movies_in_base_slug, movies_in_cls_slug)
