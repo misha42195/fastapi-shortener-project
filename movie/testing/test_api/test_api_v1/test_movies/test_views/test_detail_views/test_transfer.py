@@ -8,7 +8,7 @@ from main import app
 @pytest.mark.xfail(
     reason="waiting for another response from the server",
     raises=NotImplementedError,
-    # strict=False,
+    strict=False,
 )
 @pytest.mark.apitest
 def test_transfer_movie(
@@ -18,6 +18,5 @@ def test_transfer_movie(
         "transfer_movie",
         slug="some-slug",
     )
-    print(url)
     response = auth_client.post(url)
     assert response.status_code == status.HTTP_200_OK, response.text
