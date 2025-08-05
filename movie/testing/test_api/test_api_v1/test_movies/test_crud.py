@@ -4,8 +4,6 @@ from datetime import date
 from typing import ClassVar
 from unittest import TestCase
 
-import pytest
-
 from api.api_v1.movies import movie_storage
 from schemas.muvies import (
     CreateMovies,
