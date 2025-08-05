@@ -101,7 +101,10 @@ class MoviesStorage(BaseModel):
         self,
         slug: str,
     ) -> None:
-        redis_movies.hdel(config.REDIS_MOVIES_SET_NAME, slug,)
+        redis_movies.hdel(
+            config.REDIS_MOVIES_SET_NAME,
+            slug,
+        )
         log.info("Удаление фильма")
 
     def delete(self, movie: Movies | CreateMovies) -> None:
