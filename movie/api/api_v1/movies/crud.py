@@ -103,7 +103,7 @@ class MoviesStorage(BaseModel):
     ) -> None:
         redis_movies.hdel(
             config.REDIS_MOVIES_SET_NAME,
-            slug,
+            slug
         )
         log.info("Удаление фильма")
 
