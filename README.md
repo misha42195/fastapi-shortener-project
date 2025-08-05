@@ -6,7 +6,7 @@
 [![Mypy](https://img.shields.io/badge/type%20checker-mypy-blue?logo=python)](http://mypy-lang.org/)
 [![License](https://img.shields.io/github/license/misha42195/fastapi-shortener-project)](https://github.com/misha42195/fastapi-shortener-project/blob/master/LICENSE)
 
-# FastAPI URL Shortener
+# FastAPI Movie
 
 # Develop
 
