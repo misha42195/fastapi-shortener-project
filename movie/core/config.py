@@ -33,7 +33,7 @@ DB_USERNAME: dict[str, str] = {
     "sem": "qwerty",
 }
 
-REDIS_HOST = "localhost"
+REDIS_HOST = getenv("REDIS_HOST", "localhost")
 
 REDIS_PORT = getenv("REDIS_PORT") if getenv("REDIS_PORT") else 6379
 
