@@ -86,5 +86,5 @@ def create_movie_random_slug(
 def movie(request: SubRequest) -> Generator[CreateMovies]:
     movie_create = build_movie_create(slug=request.param)
     mov = movie_storage.create_movie(movie_create)
-    yield mov
+    yield mov  # type: ignore
     movie_storage.delete(mov)
