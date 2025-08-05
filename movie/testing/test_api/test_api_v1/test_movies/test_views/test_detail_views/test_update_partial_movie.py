@@ -18,9 +18,7 @@ class TestUpdatePartial:
         self,
         request: SubRequest,
     ) -> Generator[Movies]:
-        print(request.param)
         description = request.param
-        print(description)
         movie = create_movie_random_slug(description)
         yield movie
         movie_storage.delete(movie)
@@ -30,22 +28,22 @@ class TestUpdatePartial:
         [
             pytest.param(
                 "some description",
-                "",
+                "other description",
                 id="some-description-no-to-description",
             ),
             pytest.param(
-                "",
+                "other description",
                 "some description",
                 id="no-description-some-to-description",
             ),
             pytest.param(
-                "x",
+                "x" * 5,
                 "x" * DESCRIPTION_MAX_LENGTH,
                 id="min-description-to-max-description",
             ),
             pytest.param(
                 "x" * DESCRIPTION_MAX_LENGTH,
-                "x",
+                "x" * 5,
                 id="max-description-to-min-description",
             ),
         ],
@@ -62,4 +60,4 @@ class TestUpdatePartial:
         response = auth_client.patch(url=url, json={"description": new_description})
         assert response.status_code == status.HTTP_200_OK, response.text
         movie_in_db = movie_storage.get_by_slug(movie.slug)
-        assert movie_in_db.description == new_description, response.text  # type: ignore
+        assert movie_in_db.description == new_description, response.text
