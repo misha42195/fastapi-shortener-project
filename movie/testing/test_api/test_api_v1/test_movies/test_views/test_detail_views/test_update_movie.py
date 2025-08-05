@@ -69,10 +69,8 @@ class TestUpdate:
             slug=movie.slug,
         )
         data = movie.model_dump(mode="json")
-        print("Data 1 : ", data)
         data["title"] = new_title
         data["description"] = new_description
-        print("Data 2 : ", data)
 
         response = auth_client.put(
             url=url,

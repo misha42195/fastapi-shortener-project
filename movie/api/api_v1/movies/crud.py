@@ -107,7 +107,7 @@ class MoviesStorage(BaseModel):
         )
         log.info("Удаление фильма")
 
-    def delete(self, movie: Movies | CreateMovies) -> None:
+    def delete(self, movie: Movies) -> None:
         self.delete_by_slug(slug=movie.slug)
         log.info("Удаление фильма")
 

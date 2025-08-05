@@ -78,12 +78,13 @@ def create_movie_random_slug(
     scope="module",
     params=[
         pytest.param("slug", id="normal slug"),  # обычный слаг
-        pytest.param("sl", id="short slug"),  # короткий слаг
+        pytest.param("sls", id="short slug"),  # короткий слаг
         pytest.param("abs", id="min slug"),  # минимально допустимый
         pytest.param("max-som-ts", id="max slug"),  # максимально допустимый
     ],
 )
 def movie(request: SubRequest) -> Generator[CreateMovies]:
     movie_create = build_movie_create(slug=request.param)
-    yield movie_create
-    movie_storage.delete(movie_create)
+    mov = movie_storage.create_movie(movie_create)
+    yield mov  # type: ignore
+    movie_storage.delete(mov)

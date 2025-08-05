@@ -6,9 +6,9 @@ from pydantic import BaseModel
 
 TitleString = Annotated[str, MaxLen(30)]
 DescriptionString = Annotated[str, MinLen(5), MaxLen(100)]
-SlugString = Annotated[str, Len(5, 10)]
+SlugString = Annotated[str, Len(3, 10)]
 DirectorString = Annotated[str, Len(2, 20)]
-DESCRIPTION_MAX_LENGTH = 200
+DESCRIPTION_MAX_LENGTH = 100
 
 
 class MoviesBase(BaseModel):
