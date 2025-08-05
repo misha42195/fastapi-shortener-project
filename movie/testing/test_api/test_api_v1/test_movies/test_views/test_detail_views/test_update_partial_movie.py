@@ -60,4 +60,4 @@ class TestUpdatePartial:
         response = auth_client.patch(url=url, json={"description": new_description})
         assert response.status_code == status.HTTP_200_OK, response.text
         movie_in_db = movie_storage.get_by_slug(movie.slug)
-        assert movie_in_db.description == new_description, response.text
+        assert movie_in_db.description == new_description, response.text  # type: ignore
