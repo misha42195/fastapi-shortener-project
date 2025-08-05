@@ -5,7 +5,9 @@
 [![Ruff](https://img.shields.io/badge/linter-ruff-%23ef4e2a?logo=ruff&logoColor=white)](https://github.com/astral-sh/ruff)
 [![Mypy](https://img.shields.io/badge/type%20checker-mypy-blue?logo=python)](http://mypy-lang.org/)
 [![License](https://img.shields.io/github/license/misha42195/fastapi-shortener-project)](https://github.com/misha42195/fastapi-shortener-project/blob/master/LICENSE)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/misha42195/fastapi-shortener-project/master.svg)](https://results.pre-commit.ci/latest/github/misha42195/fastapi-shortener-project/ma
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/misha42195/fastapi-shortener-project/master.svg)](https://results.pre-commit.ci/latest/github/misha42195/fastapi-shortener-project/master)
+
+
 # FastAPI Movie
 
 # Develop
