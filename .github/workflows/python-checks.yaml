@@ -1,5 +1,4 @@
 name: Python GH Actions check 🐍
-
 on:
   push:
     branches:
