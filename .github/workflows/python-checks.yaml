@@ -49,4 +49,4 @@ jobs:
     needs:
       - run-checks
     steps:
-      - run: echo Hello tests!!!
+      - run: echo Hello tests!
