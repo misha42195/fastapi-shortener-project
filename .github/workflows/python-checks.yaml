@@ -70,7 +70,7 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
       - name: Run tests
-        run: uv run pytest --cov-report=xml
+        run: uv run pytest movie --cov=movie --cov-report=xml:coverage.xml
         env:
           TESTING: 1
           REDIS_PORT: 6379
@@ -79,4 +79,6 @@ jobs:
         with:
             token: ${{ secrets.CODECOV_TOKEN }}
             slug: misha42195/fastapi-shortener-project
+            files: coverage.xml
+            fail_ci_if_error: 'true'
             dry_run: ${{ env.ACT }}
