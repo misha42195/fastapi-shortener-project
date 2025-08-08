@@ -223,4 +223,4 @@ def test_create_or_raise_already_exists(movie: Movies) -> None:
     create_movie = CreateMovies(**movie.model_dump())
     with pytest.raises(MovieAlreadyExistsError, match=movie.slug) as ext:
         movie_storage.create_raise_already_exists(create_movie)
-        assert ext.value.args[0] == movie.slug
+    assert ext.value.args[0] == movie.slug
