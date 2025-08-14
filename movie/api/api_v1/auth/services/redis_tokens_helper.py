@@ -29,7 +29,7 @@ class RedisToken(AbstractRedisToken):
             self.redis.srem(
                 config.REDIS_TOKEN_SET_NAME,
                 token,
-            )
+            ),
         )
 
     def get_tokens(self) -> list[str]:

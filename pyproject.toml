@@ -99,6 +99,8 @@ select = [
     "FAST", # FastAPI (FAST)
     "I", # isort (I)
     "F", # PyFlakes (F)
+    "COM",
+    "Q",
 ]
 ignore = [
 ]

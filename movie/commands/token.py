@@ -32,7 +32,7 @@ def check(
             f"API token [bold][yellow]{token}[/yellow][/bold] [green]exists[/green]"
             if redis_tokens.token_exists(token)
             else f"Token [bold][yellow]{token}[/yellow][/bold][red] doesnt exist[/red]"
-        )
+        ),
     )
 
 
@@ -47,8 +47,8 @@ def list_tokens() -> None:  # имя команды
         print(
             Markdown(
                 "# Список токенов\n\n"
-                + "\n".join([f"- {token}" for token in redis_tokens.get_tokens()])
-            )
+                + "\n".join([f"- {token}" for token in redis_tokens.get_tokens()]),
+            ),
         )
     )
 
@@ -64,7 +64,7 @@ def create_token() -> None:
         (
             f"[green]Create a new token[/green] [yellow]"
             f"{redis_tokens.add_token()}[yellow]"
-        )
+        ),
     )
 
 
