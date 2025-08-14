@@ -138,7 +138,8 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
         ]
         for title in title_list:
             with self.subTest(
-                title=title, msg=f"title {title}",
+                title=title,
+                msg=f"title {title}",
             ):  # msg=f"title {description}"
                 movie_in = CreateMovies(
                     title=title,
@@ -159,7 +160,8 @@ class CreateAFilmWithVariousAttributesTestCase(TestCase):
         ]
         for description in description_list:
             with self.subTest(
-                description=description, msg=f"title {description}",
+                description=description,
+                msg=f"title {description}",
             ):  #  msg=f"title {description}"
                 movie_in = CreateMovies(
                     title="test_title",
