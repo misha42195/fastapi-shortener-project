@@ -12,7 +12,7 @@ def get_root(
         request.url.replace(
             path="/docs",
             query="",
-        )
+        ),
     )
 
     return {

@@ -64,7 +64,7 @@ class MoviesStorage(BaseModel):
             redis_movies.hexists(
                 config.REDIS_MOVIES_SET_NAME,
                 slug,
-            )
+            ),
         )
 
     def get_by_slug(self, slug: str) -> Movies | None:

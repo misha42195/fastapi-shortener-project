@@ -23,7 +23,7 @@ UNSAVE_METHODS = frozenset(
         "PUT",
         "PATCH",
         "DELETE",
-    }
+    },
 )
 
 

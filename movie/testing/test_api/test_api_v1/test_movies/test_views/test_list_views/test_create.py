@@ -42,10 +42,7 @@ def test_create_movie_already_exists(
     movie: Movies,
 ) -> None:
     url = app.url_path_for("create_movie")
-    data = CreateMovies.model_dump(
-        movie,
-        mode="json",
-    )
+    data = CreateMovies.model_dump(movie, mode="json")
     response = auth_client.post(
         url=url,
         json=data,
@@ -73,7 +70,7 @@ class TestCreateInvalid:
                 ),
                 id="long slug",
             ),
-        ]
+        ],
     )
     def movie_create_values(
         self,
