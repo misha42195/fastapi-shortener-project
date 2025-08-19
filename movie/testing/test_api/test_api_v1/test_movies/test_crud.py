@@ -94,10 +94,8 @@ class MovieStorageUpdateTestCase(TestCase):
         )
         self.assertNotEqual(source_description, updated_movie_partial.description)
         self.assertEqual(
-
             partial_movie_update.description,
             updated_movie_partial.description,
-
         )
 
     def tearDown(self) -> None:
