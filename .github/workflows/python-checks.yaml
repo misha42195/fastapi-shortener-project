@@ -68,7 +68,7 @@ jobs:
           pyproject-file: 'pyproject.toml'
           enable-cache: true
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run:  uv sync --locked
       - name: Run tests
         run: uv run pytest movie --cov=movie --cov-report=xml:coverage.xml
         env:
