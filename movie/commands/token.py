@@ -5,7 +5,7 @@ from rich import print
 from rich.markdown import Markdown
 
 from api.api_v1.auth.services import redis_tokens
-from core import config
+from core.config import settings
 
 app = typer.Typer(
     name="token",
@@ -81,7 +81,7 @@ def add_token(
     Add the passed token to the database
     """
     redis_tokens.redis.sadd(
-        config.REDIS_TOKEN_SET_NAME,
+        settings.redis.collections_names.tokens_set_name,
         token,
     )
     (

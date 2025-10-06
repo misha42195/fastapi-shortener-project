@@ -30,7 +30,7 @@ jobs:
           pyproject-file: 'pyproject.toml'
           enable-cache: true
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run: uv sync --locked
       - name: Run ruff check --diff
         uses: astral-sh/ruff-action@v3
         with:
@@ -43,7 +43,8 @@ jobs:
       - name: Run mypy
         run: uv run mypy movie
   run-test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+    container: node:20-bookworm-slim
     needs:
       - run-checks
     services:
@@ -68,7 +69,7 @@ jobs:
           pyproject-file: 'pyproject.toml'
           enable-cache: true
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run:  uv sync --locked
       - name: Run tests
         run: uv run pytest movie --cov=movie --cov-report=xml:coverage.xml
         env:

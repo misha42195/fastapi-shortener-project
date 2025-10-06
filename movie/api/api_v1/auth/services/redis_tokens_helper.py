@@ -4,7 +4,6 @@ __all__ = ("redis_tokens",)
 from redis import Redis
 
 from api.api_v1.auth.services.tokens_helper import AbstractRedisToken
-from core import config
 from core.config import settings
 
 
@@ -28,7 +27,7 @@ class RedisToken(AbstractRedisToken):
     def delete_token(self, token: str) -> bool:
         return bool(
             self.redis.srem(
-                config.REDIS_TOKEN_SET_NAME,
+                settings.redis.collections_names.tokens_set_name,
                 token,
             ),
         )
@@ -37,7 +36,11 @@ class RedisToken(AbstractRedisToken):
         """
         получение списка токенов
         """
-        return list(self.redis.smembers(config.REDIS_TOKEN_SET_NAME))
+        return list(
+            self.redis.smembers(
+                settings.redis.collections_names.tokens_set_name,
+            ),
+        )
 
     def token_exists(
         self,
