@@ -45,7 +45,6 @@ jobs:
   run-test:
     runs-on: ubuntu-latest
     container: node:20-bookworm-slim
-
     needs:
       - run-checks
     services:
