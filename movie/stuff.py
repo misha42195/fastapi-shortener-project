@@ -1,11 +1,10 @@
 from redis import Redis
-
-from core import config
+from core.config import settings
 
 redis = Redis(
-    host=config.REDIS_HOST,
-    port=config.REDIS_PORT,
-    db=config.REDIS_DB_NUM,
+    host=settings.redis.connection.host,
+    port=settings.redis.connection.port,
+    db=settings.redis.db.default,
     decode_responses=True,
 )
 

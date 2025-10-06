@@ -3,7 +3,7 @@ import logging
 from pydantic import BaseModel
 from redis import Redis
 
-from core import config
+from core.config import settings
 from schemas.muvies import (
     CreateMovies,
     Movies,
@@ -14,9 +14,9 @@ from schemas.muvies import (
 log = logging.getLogger(__name__)
 
 redis_movies = Redis(
-    host=config.REDIS_HOST,
-    port=config.REDIS_PORT,
-    db=config.REDIS_MOVIES_DB_NUM,
+    host=settings.redis.connection.host,
+    port=settings.redis.connection.port,
+    db=settings.redis.db.movies,
     decode_responses=True,
 )
 
@@ -34,14 +34,14 @@ class MovieAlreadyExistsError(MoviesBaseErr):
 
 
 class MoviesStorage(BaseModel):
-    movies_slug: dict[str, Movies] = {}
+    hash_name: str
 
     def save_movie_in_db(
         self,
         movie: Movies,
     ) -> None:
         redis_movies.hset(
-            name=config.REDIS_MOVIES_SET_NAME,
+            name=self.hash_name,
             key=movie.slug,
             value=movie.model_dump_json(),
         )
@@ -49,7 +49,7 @@ class MoviesStorage(BaseModel):
     def get_movies(self) -> list[Movies]:
         log.info("Получение списка фильмов.")
         movies_list = redis_movies.hvals(
-            config.REDIS_MOVIES_SET_NAME,
+            self.hash_name,
         )
         movies = [Movies.model_validate_json(movies) for movies in movies_list]
         log.info("Список фильмов %s", movies)
@@ -62,7 +62,7 @@ class MoviesStorage(BaseModel):
     ) -> bool:
         return bool(
             redis_movies.hexists(
-                config.REDIS_MOVIES_SET_NAME,
+                self.hash_name,
                 slug,
             ),
         )
@@ -70,7 +70,7 @@ class MoviesStorage(BaseModel):
     def get_by_slug(self, slug: str) -> Movies | None:
         log.info("получение фильма: %s", slug)
         movie_json = redis_movies.hget(
-            name=config.REDIS_MOVIES_SET_NAME,
+            name=self.hash_name,
             key=slug,
         )
         if movie_json:
@@ -102,7 +102,7 @@ class MoviesStorage(BaseModel):
         slug: str,
     ) -> None:
         redis_movies.hdel(
-            config.REDIS_MOVIES_SET_NAME,
+            self.hash_name,
             slug,
         )
         log.info("Удаление фильма")
@@ -133,4 +133,6 @@ class MoviesStorage(BaseModel):
         return movies
 
 
-movie_storage = MoviesStorage()
+movie_storage = MoviesStorage(
+    hash_name=settings.redis.collections_names.movies_hash_name,
+)
