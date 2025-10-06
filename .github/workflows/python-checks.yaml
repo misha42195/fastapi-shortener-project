@@ -44,7 +44,7 @@ jobs:
       - name: Run mypy
         run: uv run mypy movie
   run-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - run-checks
     services:
