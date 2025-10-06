@@ -18,7 +18,6 @@ from api.api_v1.auth.services.redis_tokens_helper import redis_tokens
 from api.api_v1.auth.services.redis_users_helper import redis_users
 from api.api_v1.movies.crud import movie_storage
 from core.config import (
-    DB_USERNAME,
     UNSAVE_METHODS,
 )
 from schemas.muvies import Movies
@@ -76,12 +75,13 @@ def user_basic_auth_required_for_unsave_methods(
     log.info("credentials %s", credentials)
     if request.method not in UNSAVE_METHODS:
         return
-    if (
-        credentials
-        and credentials.username in DB_USERNAME
-        and DB_USERNAME[credentials.username] == credentials.password
+    # Проверить пароль через Redis
+    if credentials and redis_users.validate_password_match(
+        credentials.username,
+        credentials.password,
     ):
         return
+
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="User credentials is required. Invalid username or password",
