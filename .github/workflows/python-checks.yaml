@@ -12,8 +12,7 @@ on:
 
 jobs:
   run-checks:
-    runs-on: ubuntu-latest
-    container: node:20-bookworm-slim
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
