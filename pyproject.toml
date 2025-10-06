@@ -3,9 +3,10 @@ name = "fastapi-movie"
 version = "0.1.0"
 description = "FastAPI Movie"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
-    "fastapi[standard,standart]>=0.115.12",
+    "fastapi[standard]>=0.115.12",
+    "pydantic-settings>=2.11.0",
     "redis[hiredis]>=6.2.0",
     "typer>=0.15.3",
 ]
@@ -24,6 +25,8 @@ dev = [
 # uv settiongs
 [tool.uv]
 required-version = "~=0.8.4"
+preview = true
+
 
 #pytest settings
 [tool.pytest.ini_options]
@@ -89,8 +92,7 @@ exclude = [
 line-length = 88
 indent-width = 4
 
-# Assume Python 3.13
-target-version = "py313"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [

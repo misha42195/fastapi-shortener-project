@@ -13,7 +13,6 @@ on:
 jobs:
   run-checks:
     runs-on: ubuntu-latest
-    container: node:20-bookworm-slim
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -22,7 +21,7 @@ jobs:
       - name: Install Black
         run: |
           python -m pip install --upgrade pip
-          pip install "black == 25.1.0"
+          pip install "black == 25.9.0"
       - name: Black ⬛
         run: black --check --diff ./
       - name: Setup uv
@@ -31,7 +30,7 @@ jobs:
           pyproject-file: 'pyproject.toml'
           enable-cache: true
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run: uv sync --locked
       - name: Run ruff check --diff
         uses: astral-sh/ruff-action@v3
         with:
@@ -44,7 +43,9 @@ jobs:
       - name: Run mypy
         run: uv run mypy movie
   run-test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+    container: node:20-bookworm-slim
+
     needs:
       - run-checks
     services:
@@ -69,7 +70,7 @@ jobs:
           pyproject-file: 'pyproject.toml'
           enable-cache: true
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run:  uv sync --locked
       - name: Run tests
         run: uv run pytest movie --cov=movie --cov-report=xml:coverage.xml
         env:
