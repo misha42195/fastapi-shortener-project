@@ -15,7 +15,7 @@ repos:
       - id: black
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.10
+    rev: v0.13.2
     hooks:
       # Run the linter
       - id: ruff
@@ -23,6 +23,6 @@ repos:
           - --fix
           # - --unsafe-fixes
   - repo: https://github.com/sirosen/check-jsonschema
-    rev: 0.33.3
+    rev: 0.34.0
     hooks:
       - id: check-github-actions
