@@ -76,6 +76,7 @@ jobs:
           MOVIE__REDIS__CONNECTION__HOST: redis
           MOVIE__REDIS__CONNECTION__PORT: 6379
       - name: 🛠 Install system dependencies for Codecov
+        shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install -y git curl gnupg
