@@ -1,4 +1,5 @@
 from redis import Redis
+
 from core.config import settings
 
 redis = Redis(
