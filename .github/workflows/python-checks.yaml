@@ -50,14 +50,12 @@ jobs:
     services:
       redis:
         image: redis
-        # Set health checks to wait until redis has started
+        # Set health checks to wait until redis has started.
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 6379:6379
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -76,6 +74,8 @@ jobs:
           TESTING: 1
           MOVIE__REDIS__CONNECTION__HOST: redis
           MOVIE__REDIS__CONNECTION__PORT: 6379
+      - name: Install dependencies for Codecov
+        run: apt-get update && apt-get install -y git curl gpg
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
