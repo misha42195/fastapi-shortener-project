@@ -1,12 +1,19 @@
 __all__ = ("UNSAVE_METHODS",)
 import logging
 from pathlib import Path
-from typing import Self
+from typing import Literal, Self
 
 from pydantic import BaseModel, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    YamlConfigSettingsSource,
+)
 
-BaseDir = Path(__file__).resolve().parent  # получаем путь до папки с файлом movie.json
+BaseDir = (
+    Path(__file__).resolve().parent.parent
+)  # получаем путь до папки с файлом movie.json
 
 PATH_TO_MOVIE_FILE = BaseDir / "movies_data.json"  # полный путь до директории movie
 
@@ -25,10 +32,20 @@ UNSAVE_METHODS = frozenset(
 )
 
 
-class LoggingConfig(BaseSettings):
-    log_level: int = LOG_LEVEL
+class LoggingConfig(BaseModel):
+    log_level_name: Literal[
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR",
+        "CRITICAL",
+    ] = "INFO"
     log_format: str = LOG_FORMAT
     date_format: str = "%Y-%m-%d %H:%M:%S"
+
+    @property
+    def log_level(self) -> int:
+        return logging.getLevelNamesMapping()[self.log_level_name]
 
 
 # подкласс для установки значений пол
@@ -74,9 +91,33 @@ class Settings(BaseSettings):
         ),
         env_prefix="MOVIE__",
         env_nested_delimiter="__",
+        yaml_file=(
+            BaseDir / "config.default.yaml",
+            BaseDir / "config.local.yaml",
+        ),
+        yaml_config_section="movie",
     )
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        return (
+            init_settings,
+            env_settings,
+            dotenv_settings,
+            file_secret_settings,
+            YamlConfigSettingsSource(settings_cls),
+        )
+
     redis: RedisConfig = RedisConfig()
     logging: LoggingConfig = LoggingConfig()
 
 
 settings = Settings()
+print(settings.logging)
