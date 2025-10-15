@@ -3,12 +3,9 @@ from fastapi import (
     HTTPException,
 )
 from fastapi.params import Depends
+from movie.dependencies.movies import GetMovieStorage
 from starlette import status
 
-from api.api_v1.movies.crud import (
-    MovieAlreadyExistsError,
-    movie_storage,
-)
 from api.api_v1.movies.dependecies import (
     user_basic_or_api_token_required,
 )
@@ -17,6 +14,7 @@ from schemas.muvies import (
     Movies,
     MoviesRead,
 )
+from storage.movies.exeptions import MovieAlreadyExistsError
 
 router = APIRouter(
     prefix="/movies",
@@ -43,8 +41,10 @@ router = APIRouter(
     "/",
     # response_model=list[Movies],
 )
-def movies() -> list[Movies]:
-    return movie_storage.get_movies()
+def movies(
+    storage: GetMovieStorage,
+) -> list[Movies]:
+    return storage.get_movies()
 
 
 @router.post(
@@ -65,10 +65,11 @@ def movies() -> list[Movies]:
 )
 def create_movie(
     movie_in: CreateMovies,
+    storage: GetMovieStorage,
 ) -> MoviesRead:
 
     try:
-        return movie_storage.create_raise_already_exists(movie_in)  # type: ignore
+        return storage.create_raise_already_exists(movie_in)  # type: ignore
     except MovieAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
