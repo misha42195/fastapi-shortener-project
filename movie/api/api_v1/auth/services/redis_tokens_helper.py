@@ -8,7 +8,6 @@ from core.config import settings
 
 
 class RedisToken(AbstractRedisToken):
-
     def __init__(
         self,
         host: str,

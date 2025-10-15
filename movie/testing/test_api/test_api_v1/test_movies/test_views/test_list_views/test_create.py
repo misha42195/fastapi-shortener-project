@@ -55,7 +55,6 @@ def test_create_movie_already_exists(
 
 @pytest.mark.apitest
 class TestCreateInvalid:
-
     @pytest.fixture(
         params=[
             pytest.param(

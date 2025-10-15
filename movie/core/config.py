@@ -1,9 +1,19 @@
-__all__ = ("UNSAVE_METHODS",)
+__all__ = (
+    "UNSAVE_METHODS",
+    "BASE_DIR",
+    "settings",
+)
 import logging
 from pathlib import Path
-from typing import Literal, Self
+from typing import (
+    Literal,
+    Self,
+)
 
-from pydantic import BaseModel, model_validator
+from pydantic import (
+    BaseModel,
+    model_validator,
+)
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -11,11 +21,7 @@ from pydantic_settings import (
     YamlConfigSettingsSource,
 )
 
-BaseDir = (
-    Path(__file__).resolve().parent.parent
-)  # получаем путь до папки с файлом movie.json
-
-PATH_TO_MOVIE_FILE = BaseDir / "movies_data.json"  # полный путь до директории movie
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 LOG_LEVEL: int = logging.INFO
@@ -48,7 +54,6 @@ class LoggingConfig(BaseModel):
         return logging.getLevelNamesMapping()[self.log_level_name]
 
 
-# подкласс для установки значений пол
 class RedisConnectionConfig(BaseModel):
     host: str = "localhost"
     port: int = 6379
@@ -80,20 +85,18 @@ class RedisConfig(BaseModel):
     collections_names: RedisCollectionsNamesConfig = RedisCollectionsNamesConfig()
 
 
-# базовый класс по объекту которого получаем настройки
-# атрибутами объекта будут другие объекты настройки
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         case_sensitive=False,
         env_file=(
-            BaseDir / ".env.template",
-            BaseDir / ".env",
+            BASE_DIR / ".env.template",
+            BASE_DIR / ".env",
         ),
         env_prefix="MOVIE__",
         env_nested_delimiter="__",
         yaml_file=(
-            BaseDir / "config.default.yaml",
-            BaseDir / "config.local.yaml",
+            BASE_DIR / "config.default.yaml",
+            BASE_DIR / "config.local.yaml",
         ),
         yaml_config_section="movie",
     )
@@ -120,4 +123,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-print(settings.logging)

@@ -130,7 +130,6 @@ class CreateMoviesTestCase(TestCase):
 
 
 class CreateAFilmWithVariousAttributesTestCase(TestCase):
-
     def test_create_movie_accepts_different_values(self) -> None:
         title_list = [
             "Inception",  # валидно

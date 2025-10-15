@@ -7,8 +7,8 @@ from os import getenv
 import pytest
 from _pytest.fixtures import SubRequest
 
-from api.api_v1.movies import movie_storage
 from schemas.muvies import CreateMovies, Movies
+from storage.movies.crud import movie_storage
 
 
 @pytest.fixture(

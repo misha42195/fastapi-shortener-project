@@ -46,7 +46,6 @@ router = APIRouter(
 def get_movie(
     movie: MovieBySlug,
 ) -> Movies:
-
     return movie
 
 

@@ -67,7 +67,6 @@ def create_movie(
     movie_in: CreateMovies,
     storage: GetMovieStorage,
 ) -> MoviesRead:
-
     try:
         return storage.create_raise_already_exists(movie_in)  # type: ignore
     except MovieAlreadyExistsError:

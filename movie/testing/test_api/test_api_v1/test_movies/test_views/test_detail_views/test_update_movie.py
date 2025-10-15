@@ -12,7 +12,6 @@ from testing.conftest import create_movie_random_slug
 
 
 class TestUpdate:
-
     @pytest.fixture()
     def movie(
         self,
