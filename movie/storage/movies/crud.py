@@ -1,3 +1,4 @@
+__all__ = ("MoviesStorage",)
 import logging
 
 from pydantic import BaseModel
@@ -10,6 +11,7 @@ from schemas.muvies import (
     MoviesPartialUpdate,
     UpdateMovies,
 )
+from storage.movies.exeptions import MovieAlreadyExistsError
 
 log = logging.getLogger(__name__)
 
@@ -19,18 +21,6 @@ redis_movies = Redis(
     db=settings.redis.db.movies,
     decode_responses=True,
 )
-
-
-class MoviesBaseErr(Exception):
-    """
-    Base exception class for movie-related errors.
-    """
-
-
-class MovieAlreadyExistsError(MoviesBaseErr):
-    """
-    Raised when attempting to create a movie that already exists.
-    """
 
 
 class MoviesStorage(BaseModel):
@@ -94,7 +84,7 @@ class MoviesStorage(BaseModel):
         movie_in: CreateMovies,
     ) -> Movies:
         if not self.exists(movie_in.slug):
-            return movie_storage.create_movie(movie_in)
+            return movi_storage.create_movie(movie_in)
         raise MovieAlreadyExistsError(movie_in.slug)
 
     def delete_by_slug(
@@ -133,6 +123,6 @@ class MoviesStorage(BaseModel):
         return movies
 
 
-movie_storage = MoviesStorage(
+movi_storage = MoviesStorage(
     hash_name=settings.redis.collections_names.movies_hash_name,
 )
