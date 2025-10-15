@@ -41,9 +41,7 @@ jobs:
         with:
           version-file: 'pyproject.toml'
       - name: Run mypy
-        run: |
-         export PYTHONPATH=./movie
-         uv run mypy movie --explicit-package-bases
+        run: uv run mypy movie
   run-test:
     runs-on: ubuntu-latest
     container: node:20-bookworm-slim
