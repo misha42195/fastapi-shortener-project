@@ -4,13 +4,13 @@ from datetime import date
 from typing import ClassVar
 from unittest import TestCase
 
-from api.api_v1.movies import movie_storage
 from schemas.muvies import (
     CreateMovies,
     Movies,
     MoviesPartialUpdate,
     UpdateMovies,
 )
+from storage.movies.crud import movie_storage
 
 
 def total(a: int, b: int) -> int:
