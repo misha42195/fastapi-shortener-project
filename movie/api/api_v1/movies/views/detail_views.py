@@ -4,12 +4,12 @@ from fastapi import (
     APIRouter,
 )
 from fastapi.params import Depends
-from movie.dependencies.movies import GetMovieStorage
 from starlette import status
 
 from api.api_v1.movies.dependecies import (
     prefetch_movie,
 )
+from dependencies.films import GetMovieStorage
 from schemas.muvies import (
     Movies,
     MoviesPartialUpdate,

@@ -3,12 +3,12 @@ from fastapi import (
     HTTPException,
 )
 from fastapi.params import Depends
-from movie.dependencies.movies import GetMovieStorage
 from starlette import status
 
 from api.api_v1.movies.dependecies import (
     user_basic_or_api_token_required,
 )
+from dependencies.films import GetMovieStorage
 from schemas.muvies import (
     CreateMovies,
     Movies,

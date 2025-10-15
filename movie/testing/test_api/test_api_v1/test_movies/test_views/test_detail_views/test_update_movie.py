@@ -5,9 +5,9 @@ from _pytest.fixtures import SubRequest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from api.api_v1.movies import movie_storage
 from main import app
 from schemas.muvies import Movies
+from storage.movies.crud import movie_storage
 from testing.conftest import create_movie_random_slug
 
 

@@ -1,4 +1,7 @@
-__all__ = ("MoviesStorage",)
+__all__ = (
+    "MoviesStorage",
+    "movie_storage",
+)
 import logging
 
 from pydantic import BaseModel
@@ -84,7 +87,7 @@ class MoviesStorage(BaseModel):
         movie_in: CreateMovies,
     ) -> Movies:
         if not self.exists(movie_in.slug):
-            return movi_storage.create_movie(movie_in)
+            return movie_storage.create_movie(movie_in)
         raise MovieAlreadyExistsError(movie_in.slug)
 
     def delete_by_slug(
@@ -123,6 +126,6 @@ class MoviesStorage(BaseModel):
         return movies
 
 
-movi_storage = MoviesStorage(
+movie_storage = MoviesStorage(
     hash_name=settings.redis.collections_names.movies_hash_name,
 )
