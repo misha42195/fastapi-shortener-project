@@ -45,9 +45,12 @@ log_cli_level = "INFO"
 # settings mypy
 [tool.mypy]
 strict = true
+mypy_path = "movie"
+ignore_missing_imports = true
 plugins = [
     "pydantic.mypy",
 ]
+
 
 # ruff settings
 [tool.ruff]
