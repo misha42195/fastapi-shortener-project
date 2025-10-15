@@ -1,4 +1,3 @@
-__all__ = ("GetMovieStorage",)
 from typing import Annotated
 
 from fastapi import Depends
