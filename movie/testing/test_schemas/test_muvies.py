@@ -8,13 +8,14 @@ from unittest import TestCase
 import pytest
 from pydantic import ValidationError
 
-from api.api_v1.movies import MovieAlreadyExistsError, movie_storage
 from schemas.muvies import (
     CreateMovies,
     Movies,
     MoviesPartialUpdate,
     UpdateMovies,
 )
+from storage.movies.crud import movie_storage
+from storage.movies.exeptions import MovieAlreadyExistsError
 
 
 @pytest.fixture()
@@ -129,7 +130,6 @@ class CreateMoviesTestCase(TestCase):
 
 
 class CreateAFilmWithVariousAttributesTestCase(TestCase):
-
     def test_create_movie_accepts_different_values(self) -> None:
         title_list = [
             "Inception",  # валидно

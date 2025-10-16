@@ -15,13 +15,15 @@ repos:
       - id: black
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
     rev: v0.14.0
     hooks:
-      # Run the linter
-      - id: ruff
-        args:
-          - --fix
-          # - --unsafe-fixes
+    # Run the linter.
+    - id: ruff-check
+      args: [ --fix ]
+    # Run the formatter.
+
+
   - repo: https://github.com/sirosen/check-jsonschema
     rev: 0.34.1
     hooks:

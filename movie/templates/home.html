@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% endblock %}
+
+{% block main %}
+<main class="container">
+    <h1>Movie</h1>
+    <a href="/docs">Swagger docs</a>
+
+    <h3 class="mt-5">Movies</h3>
+    <ul class="list-group">
+        {% for movie in movies %}
+            <li class="list-group-item">
+                {{ movie }}
+            </li>
+        {% endfor %}
+    </ul>
+</main>
+{% endblock %}
+{% block footer %}
+        {{ super() }}
+        Сайт в фазе активной разработки.
+{% endblock %}

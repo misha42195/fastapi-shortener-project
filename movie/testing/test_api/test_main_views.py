@@ -1,4 +1,3 @@
-import pytest
 from fastapi import status
 from starlette.testclient import TestClient
 
@@ -6,33 +5,8 @@ from starlette.testclient import TestClient
 def test_get_view(
     client: TestClient,
 ) -> None:
-    # TODO fake name
-    name = "Misha"
-    query = {"name": name}
-    response = client.get("/", params=query)
-    actual_response = response.json()["message"]
-    expected_results = f"Hello {name}"
-
+    response = client.get("/")
     assert response.status_code == status.HTTP_200_OK, response.text
-    assert actual_response == expected_results
-
-
-@pytest.mark.parametrize(
-    "name",
-    [
-        "Misha",
-        "123456",
-        "!@#$%^&",
-        "ddd",
-    ],
-)
-def test_get_view_custom_names(
-    name: str,
-    client: TestClient,
-) -> None:
-
-    query = {"name": name}
-    response = client.get("/", params=query)
-    actual_response = response.json()["message"]
-    expected_response = f"Hello {name}"
-    assert actual_response == expected_response
+    assert response.template.name == "home.html"  # type: ignore[attr-defined]
+    assert "movies" in response.context, response.context  # type: ignore[attr-defined]
+    assert isinstance(response.context["movies"], list)  # type: ignore[attr-defined]

@@ -16,10 +16,10 @@ from fastapi.security import (
 
 from api.api_v1.auth.services.redis_tokens_helper import redis_tokens
 from api.api_v1.auth.services.redis_users_helper import redis_users
-from api.api_v1.movies.crud import movie_storage
 from core.config import (
     UNSAVE_METHODS,
 )
+from dependencies.films import GetMovieStorage
 from schemas.muvies import Movies
 
 log = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ log = logging.getLogger(__name__)
 
 def prefetch_movie(
     slug: str,
+    movie_storage: GetMovieStorage,
 ) -> Movies:
     movie: Movies | None = movie_storage.get_by_slug(
         slug=slug,
@@ -38,20 +39,6 @@ def prefetch_movie(
         detail=f"Movie {slug!r} not found",
     )
 
-
-# def save_storage_state(
-#     background_tasks: BackgroundTasks,
-#     method: Request,
-# ):
-#     # до входа в представление view
-#     log.info("Метод запроса %r ", method.method)
-#     yield
-#     # после выхода из представления
-#     if method.method in UNSAVE_METHODS:
-#         log.info("Добавление фоновой задачи. Сохранение состояния")
-#         background_tasks.add_task(
-#             movie_storage.save_movie,
-#         )
 
 static_api_token = HTTPBearer(
     scheme_name="Static API token",

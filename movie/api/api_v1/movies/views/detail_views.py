@@ -6,10 +6,10 @@ from fastapi import (
 from fastapi.params import Depends
 from starlette import status
 
-from api.api_v1.movies.crud import movie_storage
 from api.api_v1.movies.dependecies import (
     prefetch_movie,
 )
+from dependencies.films import GetMovieStorage
 from schemas.muvies import (
     Movies,
     MoviesPartialUpdate,
@@ -46,7 +46,6 @@ router = APIRouter(
 def get_movie(
     movie: MovieBySlug,
 ) -> Movies:
-
     return movie
 
 
@@ -57,9 +56,9 @@ def get_movie(
 def update_movie_details(
     movie: MovieBySlug,
     movie_data_in: UpdateMovies,
-    # _=Depends(required_api_token),
+    storage: GetMovieStorage,
 ) -> Movies:
-    return movie_storage.update_movie(
+    return storage.update_movie(
         movie=movie,
         movie_data_in=movie_data_in,
     )
@@ -72,9 +71,9 @@ def update_movie_details(
 def update_movie_detail_partial(
     movie: MovieBySlug,
     movie_in: MoviesPartialUpdate,
-    # _=Depends(required_api_token),
+    storage: GetMovieStorage,
 ) -> Movies:
-    return movie_storage.movie_partial_update(
+    return storage.movie_partial_update(
         movies=movie,
         movies_in=movie_in,
     )
@@ -86,9 +85,9 @@ def update_movie_detail_partial(
 )
 def delete_movie(
     movie: MovieBySlug,
-    # _=Depends(required_api_token),
+    storage: GetMovieStorage,
 ) -> None:
-    movie_storage.delete(movie)
+    storage.delete(movie)
 
 
 @router.post(

@@ -51,7 +51,7 @@ plugins = [
 
 # ruff settings
 [tool.ruff]
-required-version = ">=0.11.13"
+required-version = ">=0.14.0"
 
 #для корня нашего проекта
 src = [

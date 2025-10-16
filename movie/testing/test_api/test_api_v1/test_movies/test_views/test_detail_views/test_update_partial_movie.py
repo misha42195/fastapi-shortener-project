@@ -5,14 +5,13 @@ from _pytest.fixtures import SubRequest
 from fastapi import status
 from starlette.testclient import TestClient
 
-from api.api_v1.movies import movie_storage
 from main import app
 from schemas.muvies import DESCRIPTION_MAX_LENGTH, DescriptionString, Movies
+from storage.movies.crud import movie_storage
 from testing.conftest import create_movie_random_slug
 
 
 class TestUpdatePartial:
-
     @pytest.fixture()
     def movie(
         self,
@@ -55,7 +54,6 @@ class TestUpdatePartial:
         new_description: DescriptionString,
         auth_client: TestClient,
     ) -> None:
-
         url = app.url_path_for("update_movie_detail_partial", slug=movie.slug)
         response = auth_client.patch(url=url, json={"description": new_description})
         assert response.status_code == status.HTTP_200_OK, response.text
