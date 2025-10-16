@@ -108,6 +108,6 @@ select = [
 ignore = [
 ]
 
-# Allow fix for all enabled rules (when `--fix`) is provided.
+# Allow fix for all enabled rules (when `--fix`)
 fixable = ["ALL"]
 unfixable = []
