@@ -8,7 +8,7 @@ from starlette import status
 from api.api_v1.movies.dependecies import (
     user_basic_or_api_token_required,
 )
-from dependencies.films import GetMovieStorage
+from dependencies.movies import GetMovieStorage
 from schemas.muvies import (
     CreateMovies,
     Movies,
