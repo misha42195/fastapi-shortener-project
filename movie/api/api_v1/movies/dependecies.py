@@ -1,11 +1,6 @@
 import logging
 from typing import Annotated
 
-from dependencies.auth import (
-    UNSAVE_METHODS,
-    username_basic_auth,
-    validate_basic_auth,
-)
 from fastapi import (
     HTTPException,
     Request,
@@ -18,6 +13,11 @@ from fastapi.security import (
     HTTPBearer,
 )
 
+from dependencies.auth import (
+    UNSAVE_METHODS,
+    user_basic_auth,
+    validate_basic_auth,
+)
 from dependencies.movies import GetMovieStorage
 from schemas.muvies import Movies
 from services.auth.redis_tokens_helper import redis_tokens
@@ -75,7 +75,7 @@ def user_basic_or_api_token_required(
     ] = None,
     credentials: Annotated[
         HTTPBasicCredentials | None,
-        Depends(username_basic_auth),
+        Depends(user_basic_auth),
     ] = None,
 ) -> None:
     if request.method not in UNSAVE_METHODS:

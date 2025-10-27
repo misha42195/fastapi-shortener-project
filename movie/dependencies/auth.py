@@ -3,8 +3,9 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from services.auth.redis_users_helper import redis_users
 from starlette import status
+
+from services.auth.redis_users_helper import redis_users
 
 log = logging.getLogger(__name__)
 

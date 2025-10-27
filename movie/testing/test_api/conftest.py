@@ -1,10 +1,10 @@
 from collections.abc import Generator
 
 import pytest
-from api.api_v1.auth.services import redis_tokens
 from starlette.testclient import TestClient
 
 from main import app
+from services.auth import redis_tokens
 
 
 @pytest.fixture()
