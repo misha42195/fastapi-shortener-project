@@ -3,8 +3,8 @@ __all__ = ("redis_tokens",)
 
 from redis import Redis
 
-from api.api_v1.auth.services.tokens_helper import AbstractRedisToken
 from core.config import settings
+from services.auth.tokens_helper import AbstractRedisToken
 
 
 class RedisToken(AbstractRedisToken):

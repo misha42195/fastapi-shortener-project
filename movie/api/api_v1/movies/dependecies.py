@@ -9,7 +9,6 @@ from fastapi import (
 from fastapi.params import Depends
 from fastapi.security import (
     HTTPAuthorizationCredentials,
-    HTTPBasic,
     HTTPBasicCredentials,
     HTTPBearer,
 )
@@ -21,6 +20,7 @@ from core.config import (
 )
 from dependencies.movies import GetMovieStorage
 from schemas.muvies import Movies
+from services.auth.redis_tokens_helper import redis_tokens
 
 log = logging.getLogger(__name__)
 
@@ -45,35 +45,6 @@ static_api_token = HTTPBearer(
     description="Your **api token** for developer portal [read more](#) ",
     auto_error=False,
 )
-secrets = HTTPBasic(
-    auto_error=False,
-    scheme_name="Схема с полями: username, password",
-    description="Объект предоставляющий поля для авторизации",
-)
-
-
-def user_basic_auth_required_for_unsave_methods(
-    request: Request,
-    credentials: Annotated[
-        HTTPBasicCredentials | None,
-        Depends(secrets),
-    ] = None,
-) -> None:
-    log.info("credentials %s", credentials)
-    if request.method not in UNSAVE_METHODS:
-        return
-    # Проверить пароль через Redis
-    if credentials and redis_users.validate_password_match(
-        credentials.username,
-        credentials.password,
-    ):
-        return
-
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="User credentials is required. Invalid username or password",
-        headers={"WWW-Authenticate": "Basic"},
-    )
 
 
 def validate_api_token(
@@ -96,26 +67,6 @@ def validate_api_token(
     )
 
 
-def validate_user_basic(
-    credentials: Annotated[
-        HTTPBasicCredentials | None,
-        Depends(secrets),
-    ] = None,
-) -> None:
-    log.info("credentials %s", credentials)
-
-    if credentials and redis_users.validate_password_match(
-        credentials.username,
-        credentials.password,
-    ):
-        return
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid API token or password",
-        headers={"WWW-Authenticate": "Basic"},
-    )
-
-
 def user_basic_or_api_token_required(
     request: Request,
     api_token: Annotated[
@@ -124,7 +75,7 @@ def user_basic_or_api_token_required(
     ] = None,
     credentials: Annotated[
         HTTPBasicCredentials | None,
-        Depends(secrets),
+        Depends(username_basic_auth),
     ] = None,
 ) -> None:
     if request.method not in UNSAVE_METHODS:
@@ -132,7 +83,7 @@ def user_basic_or_api_token_required(
     if api_token:
         return validate_api_token(api_token=api_token)
     if credentials:
-        return validate_user_basic(credentials=credentials)
+        return validate_basic_auth(credentials=credentials)
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Log in using a token or login and password",
