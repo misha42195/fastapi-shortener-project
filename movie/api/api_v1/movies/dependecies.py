@@ -1,6 +1,11 @@
 import logging
 from typing import Annotated
 
+from dependencies.auth import (
+    UNSAVE_METHODS,
+    username_basic_auth,
+    validate_basic_auth,
+)
 from fastapi import (
     HTTPException,
     Request,
@@ -13,11 +18,6 @@ from fastapi.security import (
     HTTPBearer,
 )
 
-from dependencies.auth import (
-    UNSAVE_METHODS,
-    username_basic_auth,
-    validate_basic_auth,
-)
 from dependencies.movies import GetMovieStorage
 from schemas.muvies import Movies
 from services.auth.redis_tokens_helper import redis_tokens
