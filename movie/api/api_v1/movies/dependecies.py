@@ -1,7 +1,6 @@
 import logging
 from typing import Annotated
 
-from dependencies.films import GetMovieStorage
 from fastapi import (
     HTTPException,
     Request,
@@ -20,6 +19,7 @@ from api.api_v1.auth.services.redis_users_helper import redis_users
 from core.config import (
     UNSAVE_METHODS,
 )
+from dependencies.movies import GetMovieStorage
 from schemas.muvies import Movies
 
 log = logging.getLogger(__name__)
