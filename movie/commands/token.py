@@ -4,8 +4,8 @@ import typer
 from rich import print
 from rich.markdown import Markdown
 
-from api.api_v1.auth.services import redis_tokens
 from core.config import settings
+from services.auth import redis_tokens
 
 app = typer.Typer(
     name="token",
