@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}
+  Movie list
+{% endblock %}
+{% block main %}
+  <h1>
+    All movie list
+  </h1>
+  {% if movies_list %}
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Slug</th>
+          <th scope="col">Title</th>
+          <th scope="col">Director</th>
+          <th scope="col">Release year</th>
+          <th scope="col">Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          {% for movies in movies_list %}
+            <td><code>{{ movies.slug }}</code></td>
+            <td>{{ movies.title }}</td>
+            <td>{{ movies.director }}</td>
+            <td>{{ movies.release_year }}</td>
+            <td>{% if movies.description %}
+              {{ movies.description }}
+            {% else %}
+              <code>---</code>
+            {% endif %} </td>
+            </tr>
+          {% endfor %}
+      </table>
+    </div>
+  {% else %}
+    <p>Not movie yet</p>
+  {% endif %}
+{% endblock %}

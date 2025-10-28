@@ -1,11 +1,11 @@
 from datetime import date
 from typing import Annotated
 
-from annotated_types import Len, MaxLen, MinLen
+from annotated_types import Len, MaxLen
 from pydantic import BaseModel
 
 TitleString = Annotated[str, MaxLen(30)]
-DescriptionString = Annotated[str, MinLen(5), MaxLen(100)]
+DescriptionString = Annotated[str, MaxLen(100)]
 SlugString = Annotated[str, Len(3, 10)]
 DirectorString = Annotated[str, Len(2, 20)]
 DESCRIPTION_MAX_LENGTH = 100
