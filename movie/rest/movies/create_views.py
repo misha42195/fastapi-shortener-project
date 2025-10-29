@@ -1,8 +1,6 @@
 from typing import Any
 
-from fastapi import (
-    APIRouter,
-)
+from fastapi import APIRouter
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 
