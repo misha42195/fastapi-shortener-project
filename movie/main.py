@@ -21,10 +21,10 @@ app = FastAPI(
     title="Movies",
     lifespan=lifespan,
 )
+
+app.include_router(rest_view_router)
+
 app.include_router(redirect_router)
 
 
 app.include_router(api_router)
-
-
-app.include_router(rest_view_router)

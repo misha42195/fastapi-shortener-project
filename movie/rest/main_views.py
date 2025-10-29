@@ -8,7 +8,9 @@ from fastapi.responses import HTMLResponse
 
 from templating import templates
 
-router = APIRouter()
+router = APIRouter(
+    include_in_schema=False,
+)
 
 movies = [
     "фильм 2020",
