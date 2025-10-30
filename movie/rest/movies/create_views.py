@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Form
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 
@@ -34,10 +34,10 @@ def get_page_create_view(
     name="movies:create",
 )
 def create_movie(
-    request: Request,
-) -> HTMLResponse:
+    movie_create: Annotated[
+        CreateMovies,
+        Form(),
+    ],
+) -> dict[str, str]:
 
-    return templates.TemplateResponse(
-        request=request,
-        name="movies/create.html",
-    )
+    return movie_create.model_dump(mode="json")
