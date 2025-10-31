@@ -2,7 +2,6 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Form
 from starlette import status
-
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
