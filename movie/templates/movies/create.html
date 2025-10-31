@@ -6,6 +6,7 @@
 {% endblock %}
 {% block main %}
   <h1>Create a new movie</h1>
+  <code>errors - {{ errors[field_name] }}</code>
   <div class="row">
     <div class="col col-12 col-md-6 col-lg-4">
       <form action="{{ url_for('movies:create') }}" method="post">
@@ -15,11 +16,18 @@
             field_name=field_name,
             field_schema=field_schema,
             is_required=is_required,
-            default=default) }}
-
+            value=form_data and form_data[field_name] or field_schema.default,
+            error=errors and errors[field_name] or None,
+            validated=form_validated) }}
         {% endfor %}
         <input type="submit" value="Create" class="btn btn-primary">
       </form>
     </div>
+  </div>
+  <div class="mt-3">
+    <a
+      href="{{ url_for('movies:list') }}"
+      class="btn btn-outline-primary ">Back to movies list
+    </a>
   </div>
 {% endblock %}
