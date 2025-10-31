@@ -35,7 +35,18 @@
           {% endfor %}
       </table>
     </div>
+    <div class="mt-3">
+      <a
+        href="{{ url_for('movies:create-view') }}"
+        class="btn btn-outline-primary">Crete movie
+      </a>
+    </div>
   {% else %}
     <p>Not movie yet</p>
+    <h3>
+      <a
+        href="{{ url_for('movies:create-view') }}"> Create a new movie
+      </a>
+    </h3>
   {% endif %}
 {% endblock %}
