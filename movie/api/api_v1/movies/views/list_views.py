@@ -6,7 +6,7 @@ from fastapi.params import Depends
 from starlette import status
 
 from api.api_v1.movies.dependecies import (
-    user_basic_or_api_token_required,
+    api_token_or_user_basic_auth_required_for_unsafe_methods,
 )
 from dependencies.movies import GetMovieStorage
 from schemas.muvies import (
@@ -20,7 +20,7 @@ router = APIRouter(
     prefix="/movies",
     tags=["Movies"],
     dependencies=[
-        Depends(user_basic_or_api_token_required),
+        Depends(api_token_or_user_basic_auth_required_for_unsafe_methods),
     ],
     responses={
         status.HTTP_401_UNAUTHORIZED: {

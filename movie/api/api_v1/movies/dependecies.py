@@ -3,7 +3,6 @@ from typing import Annotated
 
 from fastapi import (
     HTTPException,
-    Request,
     status,
 )
 from fastapi.params import Depends
@@ -12,12 +11,9 @@ from fastapi.security import (
     HTTPBasicCredentials,
     HTTPBearer,
 )
+from starlette.requests import Request
 
-from dependencies.auth import (
-    UNSAVE_METHODS,
-    user_basic_auth,
-    validate_basic_auth,
-)
+from dependencies.auth import UNSAVE_METHODS, user_basic_auth, validate_basic_auth
 from dependencies.movies import GetMovieStorage
 from schemas.muvies import Movies
 from services.auth.redis_tokens_helper import redis_tokens
@@ -67,7 +63,26 @@ def validate_api_token(
     )
 
 
-def user_basic_or_api_token_required(
+def api_token_required_for_unsafe_methods(
+    request: Request,
+    api_token: Annotated[
+        HTTPAuthorizationCredentials | None,
+        Depends(static_api_token),
+    ] = None,
+) -> None:
+    if request.method not in UNSAVE_METHODS:
+        return
+
+    if not api_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="API token is required",
+        )
+
+    validate_api_token(api_token=api_token)
+
+
+def api_token_or_user_basic_auth_required_for_unsafe_methods(
     request: Request,
     api_token: Annotated[
         HTTPAuthorizationCredentials | None,
@@ -80,12 +95,8 @@ def user_basic_or_api_token_required(
 ) -> None:
     if request.method not in UNSAVE_METHODS:
         return None
-    if api_token:
-        return validate_api_token(api_token=api_token)
+
     if credentials:
         return validate_basic_auth(credentials=credentials)
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Log in using a token or login and password",
-        headers={"WWW-Authenticate": "Bearer, Basic"},
-    )
+    if api_token:
+        return validate_api_token(api_token=api_token)
