@@ -1,9 +1,8 @@
-import pytest
 from fastapi import status
 from starlette.testclient import TestClient
 
 
-@pytest.mark.skip(reason="CI environment missing routes")
+# @pytest.mark.skip(reason="CI environment missing routes")
 def test_get_view(
     client: TestClient,
 ) -> None:

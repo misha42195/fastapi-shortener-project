@@ -1,19 +1,18 @@
 import logging
 from typing import Annotated
 
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi import HTTPException
+from fastapi.params import Depends
+from fastapi.security import (
+    HTTPBasic,
+    HTTPBasicCredentials,
+)
 from starlette import status
+from starlette.requests import Request
 
 from services.auth.redis_users_helper import redis_users
 
 log = logging.getLogger(__name__)
-
-user_basic_auth = HTTPBasic(
-    auto_error=False,
-    scheme_name="Схема с полями: username, password",
-    description="Объект предоставляющий поля для авторизации",
-)
 
 UNSAVE_METHODS = frozenset(
     {
@@ -22,6 +21,11 @@ UNSAVE_METHODS = frozenset(
         "PATCH",
         "DELETE",
     },
+)
+user_basic_auth = HTTPBasic(
+    auto_error=False,
+    scheme_name="Схема с полями: username, password",
+    description="Объект предоставляющий поля для авторизации",
 )
 
 
@@ -42,4 +46,19 @@ def validate_basic_auth(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid API token or password",
         headers={"WWW-Authenticate": "Basic"},
+    )
+
+
+def user_basic_auth_required_for_unsafe_methods(
+    request: Request,
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(user_basic_auth),
+    ] = None,
+) -> None:
+    if request.method not in UNSAVE_METHODS:
+        return
+
+    validate_basic_auth(
+        credentials=credentials,
     )
