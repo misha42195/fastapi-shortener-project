@@ -1,4 +1,4 @@
-from core.config import UNSAVE_METHODS
+from dependencies.auth import UNSAVE_METHODS
 
 
 class TestUnsaveMethod:
