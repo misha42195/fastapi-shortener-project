@@ -11,12 +11,12 @@
       <table class="table table-striped table-hover align-middle">
         <thead>
         <tr>
-          <th scope="col">#</th>
           <th scope="col">Slug</th>
           <th scope="col">Title</th>
           <th scope="col">Director</th>
           <th scope="col">Release year</th>
           <th scope="col">Description</th>
+          <th scope="col">Acton</th>
         </tr>
         </thead>
         <tbody>
@@ -31,6 +31,13 @@
             {% else %}
               <code>---</code>
             {% endif %} </td>
+            <td>
+              <div class="btn-group" role="group" aria-label="Movies">
+                <a class="btn btn-outline-info"
+                   href="{{ url_for('movie:update-views',slug=movies.slug) }}">Edit</a>
+                <a class="btn btn-outline-danger disabled" href="#">Delete</a>
+              </div>
+            </td>
             </tr>
           {% endfor %}
       </table>
