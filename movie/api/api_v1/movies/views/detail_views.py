@@ -3,7 +3,10 @@ from fastapi import (
 )
 from starlette import status
 
-from dependencies.movies import GetMovieStorage, MovieBySlug
+from dependencies.movies import (
+    GetMovieStorage,
+    MovieBySlug,
+)
 from schemas.muvies import (
     Movies,
     MoviesPartialUpdate,
