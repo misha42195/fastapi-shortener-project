@@ -1,15 +1,9 @@
-from typing import Annotated
-
 from fastapi import (
     APIRouter,
 )
-from fastapi.params import Depends
 from starlette import status
 
-from api.api_v1.movies.dependecies import (
-    prefetch_movie,
-)
-from dependencies.movies import GetMovieStorage
+from dependencies.movies import GetMovieStorage, MovieBySlug
 from schemas.muvies import (
     Movies,
     MoviesPartialUpdate,
@@ -17,10 +11,6 @@ from schemas.muvies import (
     UpdateMovies,
 )
 
-MovieBySlug = Annotated[
-    Movies,
-    Depends(prefetch_movie),
-]
 router = APIRouter(
     prefix="/{slug}",
     tags=["Movies"],
