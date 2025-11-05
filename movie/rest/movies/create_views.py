@@ -29,7 +29,7 @@ response_helper = FormResponseHelper(
 def get_page_create_view(
     request: Request,
 ) -> HTMLResponse:
-    return response_helper.create_view_validation_response(
+    return response_helper.render(
         request=request,
     )
 
@@ -50,7 +50,7 @@ async def create_movie(
                 form,
             )
         except ValidationError as e:
-            return response_helper.create_view_validation_response(
+            return response_helper.render(
                 request=request,
                 pydantic_error=e,
                 form_data=form,
@@ -66,7 +66,7 @@ async def create_movie(
             url=request.url_for("movies:list"),
             status_code=status.HTTP_303_SEE_OTHER,
         )
-    return response_helper.create_view_validation_response(
+    return response_helper.render(
         request=request,
         errors=errors,
         form_data=movie_create,
