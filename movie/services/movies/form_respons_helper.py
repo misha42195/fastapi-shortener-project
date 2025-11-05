@@ -5,6 +5,7 @@ from starlette import status
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 
+from schemas.muvies import Movies
 from templating import templates
 
 
@@ -24,7 +25,7 @@ class FormResponseHelper:
     ) -> dict[str, str]:
         return {f'{err["loc"][0]}': err["msg"] for err in error.errors()}
 
-    def create_view_validation_response(
+    def render(
         self,
         request: Request,
         *,
@@ -32,6 +33,7 @@ class FormResponseHelper:
         form_data: BaseModel | Mapping[str, Any] | None = None,
         form_validated: bool = False,
         pydantic_error: ValidationError | None = None,
+        **context_extra: type[Movies],
     ) -> HTMLResponse:
         context: dict[str, Any] = {}
         model_schema = self.model.model_json_schema()
@@ -44,10 +46,11 @@ class FormResponseHelper:
             form_validated=form_validated,
             form_data=form_data,
         )
+        context.update(context_extra)
 
         return templates.TemplateResponse(
             request=request,
-            name="movies/create.html",
+            name=self.template_name,
             status_code=(
                 status.HTTP_422_UNPROCESSABLE_ENTITY
                 if form_validated and errors

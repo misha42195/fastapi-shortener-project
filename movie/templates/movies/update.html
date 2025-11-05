@@ -1,11 +1,12 @@
 {% from 'movies/macro/form.html' import render_form with context %}
 {% extends 'base.html' %}
 {% block title %}
-  <h1>Update movie</h1>
+  Update movie {{ movie.slug }}
 {% endblock %}
 {% block main %}
+  <h1>Update movie<code>{{ movie.slug }}</code></h1>
   {{ render_form(
-  action=url_for(''),
+  action='',
   button_text='Update') }}
   {% include 'movies/components/back-to-list.html' %}
 {% endblock %}

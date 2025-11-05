@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from starlette.responses import HTMLResponse
 
+from dependencies.movies import MovieBySlug
 from schemas.muvies import UpdateMovies
 from services.movies import FormResponseHelper
 
@@ -20,5 +21,11 @@ response_helper = FormResponseHelper(
 )
 def get_page_update_view(
     request: Request,
+    movie: MovieBySlug,
 ) -> HTMLResponse:
-    return response_helper.create_view_validation_response(request=request)
+    form = UpdateMovies(**movie.model_dump())
+    return response_helper.render(
+        request=request,
+        form_data=form,
+        movie=movie,  # type: ignore
+    )
