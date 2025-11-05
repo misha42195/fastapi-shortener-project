@@ -14,27 +14,9 @@ from fastapi.security import (
 from starlette.requests import Request
 
 from dependencies.auth import UNSAVE_METHODS, user_basic_auth, validate_basic_auth
-from dependencies.movies import GetMovieStorage
-from schemas.muvies import Movies
 from services.auth.redis_tokens_helper import redis_tokens
 
 log = logging.getLogger(__name__)
-
-
-def prefetch_movie(
-    slug: str,
-    movie_storage: GetMovieStorage,
-) -> Movies:
-    movie: Movies | None = movie_storage.get_by_slug(
-        slug=slug,
-    )
-    if movie:
-        return movie
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Movie {slug!r} not found",
-    )
-
 
 static_api_token = HTTPBearer(
     scheme_name="Static API token",
