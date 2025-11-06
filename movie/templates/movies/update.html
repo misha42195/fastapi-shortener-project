@@ -6,7 +6,7 @@
 {% block main %}
   <h1>Update movie<code>{{ movie.slug }}</code></h1>
   {{ render_form(
-  action='',
+  action=url_for('movie:update',slug=movie.slug),
   button_text='Update') }}
   {% include 'movies/components/back-to-list.html' %}
 {% endblock %}

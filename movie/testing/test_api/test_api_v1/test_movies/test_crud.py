@@ -78,7 +78,7 @@ class MovieStorageUpdateTestCase(TestCase):
 
         updated_movie = movie_storage.update_movie(
             movie=self.test_movie,
-            movie_data_in=movie_update,
+            movie_in=movie_update,
         )
         self.assertNotEqual(source_movie, updated_movie.title)
         self.assertEqual(movie_update, UpdateMovies(**updated_movie.model_dump()))

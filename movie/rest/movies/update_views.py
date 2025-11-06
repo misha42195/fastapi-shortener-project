@@ -1,7 +1,20 @@
-from fastapi import APIRouter, Request
-from starlette.responses import HTMLResponse
+from typing import Annotated
 
-from dependencies.movies import MovieBySlug
+from fastapi import (
+    APIRouter,
+    Form,
+    Request,
+)
+from starlette import status
+from starlette.responses import (
+    HTMLResponse,
+    RedirectResponse,
+)
+
+from dependencies.movies import (
+    GetMovieStorage,
+    MovieBySlug,
+)
 from schemas.muvies import UpdateMovies
 from services.movies import FormResponseHelper
 
@@ -28,4 +41,27 @@ def get_page_update_view(
         request=request,
         form_data=form,
         movie=movie,  # type: ignore
+    )
+
+
+@router.post(
+    path="/",
+    name="movie:update",
+)
+def update_movie(
+    request: Request,
+    movie: MovieBySlug,
+    storage: GetMovieStorage,
+    movie_in: Annotated[
+        UpdateMovies,
+        Form(),
+    ],
+) -> RedirectResponse:
+    storage.update_movie(
+        movie=movie,
+        movie_in=movie_in,
+    )
+    return RedirectResponse(
+        url=request.url_for("movies:list"),
+        status_code=status.HTTP_303_SEE_OTHER,
     )
