@@ -107,12 +107,12 @@ class MoviesStorage(BaseModel):
     def update_movie(
         self,
         movie: Movies,
-        movie_data_in: UpdateMovies,
+        movie_in: UpdateMovies,
     ) -> Movies:
-        for k, v in movie_data_in:
+        for k, v in movie_in:
             setattr(movie, k, v)
         self.save_movie_in_db(movie)
-        log.info("Фильм обновлен с %s до %s", movie.director, movie_data_in.description)
+        log.info("Фильм обновлен с %s до %s", movie.director, movie_in.description)
         return movie
 
     def movie_partial_update(

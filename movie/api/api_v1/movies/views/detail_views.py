@@ -53,7 +53,7 @@ def update_movie_details(
 ) -> Movies:
     return storage.update_movie(
         movie=movie,
-        movie_data_in=movie_data_in,
+        movie_in=movie_data_in,
     )
 
 
