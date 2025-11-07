@@ -33,7 +33,7 @@ class FormResponseHelper:
         form_data: BaseModel | Mapping[str, Any] | None = None,
         form_validated: bool = False,
         pydantic_error: ValidationError | None = None,
-        **context_extra: type[Movies],
+        **context_extra: Movies,
     ) -> HTMLResponse:
         context: dict[str, Any] = {}
         model_schema = self.model.model_json_schema()
