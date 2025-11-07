@@ -1,10 +1,8 @@
-from typing import Annotated
-
 from fastapi import (
     APIRouter,
-    Form,
     Request,
 )
+from pydantic import ValidationError
 from starlette import status
 from starlette.responses import (
     HTMLResponse,
@@ -40,28 +38,41 @@ def get_page_update_view(
     return response_helper.render(
         request=request,
         form_data=form,
-        movie=movie,  # type: ignore
+        movie=movie,
     )
 
 
 @router.post(
     path="/",
     name="movie:update",
+    response_model=None,
 )
-def update_movie(
+async def update_movie(
     request: Request,
     movie: MovieBySlug,
     storage: GetMovieStorage,
-    movie_in: Annotated[
-        UpdateMovies,
-        Form(),
-    ],
-) -> RedirectResponse:
+) -> RedirectResponse | HTMLResponse:
+    async with request.form() as form:
+        try:
+            movie_update = UpdateMovies.model_validate(
+                form,
+            )
+        except ValidationError as e:
+            return response_helper.render(
+                request=request,
+                pydantic_error=e,
+                form_data=form,
+                form_validated=True,
+                movie=movie,
+            )
+
     storage.update_movie(
         movie=movie,
-        movie_in=movie_in,
+        movie_in=movie_update,
     )
     return RedirectResponse(
-        url=request.url_for("movies:list"),
+        url=request.url_for(
+            "movies:list",
+        ),
         status_code=status.HTTP_303_SEE_OTHER,
     )
