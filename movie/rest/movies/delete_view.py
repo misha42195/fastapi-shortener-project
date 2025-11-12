@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from starlette import status
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
+from starlette.responses import Response
 
 from dependencies.movies import (
     GetMovieStorage,
@@ -39,7 +39,7 @@ response_helper = FormResponseHelper(
 #     )
 
 
-@router.post(
+@router.delete(
     path="/",
     name="delete:movie",
 )
@@ -47,10 +47,10 @@ def delete_movie(
     request: Request,
     movie: MovieBySlug,
     storage: GetMovieStorage,
-) -> RedirectResponse:
+) -> Response:
     storage.delete(movie=movie)
 
-    return RedirectResponse(
-        url=request.url_for("movies:list"),
-        status_code=status.HTTP_303_SEE_OTHER,
+    return Response(
+        content="",
+        status_code=status.HTTP_200_OK,
     )
