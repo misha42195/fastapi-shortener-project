@@ -74,14 +74,15 @@
                         class="btn btn-secondary"
                         data-bs-dismiss="modal">Close
                       </button>
-                      <form
-                        action="{{ url_for('delete:movie',slug=movies.slug) }}"
-                        method="post">
-                        <button
-                          type="submit"
-                          class="btn btn-danger">Delete
-                        </button>
-                      </form>
+                      <button
+                        hx-delete="{{ url_for('delete:movie',slug=movies.slug) }}"
+                        hx-target="closest tr"
+                        hx-swap="outerHTML swap:0.5s"
+                        type="submit"
+                        class="btn btn-danger"
+                        data-bs-dismiss="modal"
+                      >Permanently delete
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -105,4 +106,15 @@
       </a>
     </h3>
   {% endif %}
+  <style>
+      tr.htmx-swapping td {
+          opacity: 0;
+          transition: opacity 0.5s ease-out;
+      }
+  </style>
+  <script
+    src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+    integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
+    crossorigin="anonymous">
+  </script>
 {% endblock %}
