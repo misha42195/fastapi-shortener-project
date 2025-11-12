@@ -32,10 +32,59 @@
               <code>---</code>
             {% endif %} </td>
             <td>
-              <div class="btn-group" role="group" aria-label="Movies">
+              <div class="btn-group"
+                   role="group"
+                   aria-label="Movies"
+              >
                 <a class="btn btn-outline-info"
                    href="{{ url_for('movie:update-views',slug=movies.slug) }}">Edit</a>
-                <a class="btn btn-outline-danger disabled" href="#">Delete</a>
+                <!-- Button trigger modal -->
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modal-confirm-delete{{ movies.slug }}-label">
+                  Delete
+                </button>
+              </div>
+              <!-- Modal -->
+              <div class="modal fade"
+                   id="modal-confirm-delete{{ movies.slug }}-label"
+                   tabindex="-1"
+                   aria-labelledby="modal-confirm-delete{{ movies.slug }}-label"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5"
+                          id="modal-confirm-delete{{ movies.slug }}-label"
+                      >Confirm delete movie<code>{{ movies.slug }}</code></h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      Are you sure delete <code>{{ movies.slug }}</code>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close
+                      </button>
+                      <form
+                        action="{{ url_for('delete:movie',slug=movies.slug) }}"
+                        method="post">
+                        <button
+                          type="submit"
+                          class="btn btn-danger">Delete
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
               </div>
             </td>
             </tr>
